@@ -24,7 +24,8 @@ public class PaymentController {
 
     private final Map<Long, Payment> paymentByIdMap;
 
-    public PaymentController() {
+    public PaymentController()
+    {
         paymentByIdMap = PAYMENTS.stream()
                 .collect(toMap(Payment::getId, Function.identity()));
     }
