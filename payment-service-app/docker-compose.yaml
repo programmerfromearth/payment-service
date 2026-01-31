@@ -1,0 +1,5 @@
+services:
+  payment-service-app:
+    image: payment-service-app
+    ports:
+      - "8080:8080"
