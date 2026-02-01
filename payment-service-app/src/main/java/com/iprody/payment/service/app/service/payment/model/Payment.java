@@ -1,17 +1,22 @@
 package com.iprody.payment.service.app.service.payment.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
+import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class Payment {
-    private UUID id;
-    private double value;
+@Builder
+public record Payment(
+        UUID guid,
+        UUID inquiryRefId,
+        BigDecimal amount,
+        String currency,
+        UUID transactionRefId,
+        PaymentStatus status,
+        String note,
+        OffsetDateTime createdAt,
+        OffsetDateTime updatedAt) {
+
 }
