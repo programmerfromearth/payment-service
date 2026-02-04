@@ -1,5 +1,24 @@
 services:
   payment-service-app:
     image: payment-service-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment-db
     ports:
       - "8080:8080"
+
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: payment-db
+      LC_MESSAGES: en_US.UTF-8
+    ports:
+      - "35432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
