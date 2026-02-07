@@ -2,6 +2,7 @@ package com.iprody.payment.service.app.persistency.specification;
 
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity_;
+import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,6 +12,10 @@ import java.time.OffsetDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class PaymentSpecification {
+
+    public static Specification<PaymentEntity> hasStatus(PaymentStatus status) {
+        return (root, query, cb) -> cb.equal(root.get(PaymentEntity_.STATUS), status);
+    }
 
     public static Specification<PaymentEntity> hasCurrency(String currency) {
         return (root, query, cb) -> cb.equal(root.get(PaymentEntity_.CURRENCY), currency);

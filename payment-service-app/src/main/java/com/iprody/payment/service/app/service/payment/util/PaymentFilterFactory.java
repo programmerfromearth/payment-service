@@ -13,12 +13,21 @@ public abstract class PaymentFilterFactory {
 
     public static Specification<PaymentEntity> fromFilter(PaymentFilter filter) {
         return Specification.<PaymentEntity>unrestricted()
-                .and(getPaymentEntitySpecification(filter))
+                .and(geStatusSpecification(filter))
+                .and(getCurrencySpecification(filter))
                 .and(getAmountSpecification(filter))
                 .and(getcreatedAfterSpecification(filter));
     }
 
-    private static Specification<PaymentEntity> getPaymentEntitySpecification(PaymentFilter filter) {
+    private static Specification<PaymentEntity> geStatusSpecification(PaymentFilter filter) {
+        if (filter.status() != null) {
+            return PaymentSpecification.hasStatus(filter.status());
+        }
+
+        return Specification.unrestricted();
+    }
+
+    private static Specification<PaymentEntity> getCurrencySpecification(PaymentFilter filter) {
         if (StringUtils.hasText(filter.currency())) {
             return PaymentSpecification.hasCurrency(filter.currency());
         }
