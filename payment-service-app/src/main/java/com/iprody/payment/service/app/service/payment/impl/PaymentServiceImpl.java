@@ -1,10 +1,14 @@
 package com.iprody.payment.service.app.service.payment.impl;
 
+import com.iprody.payment.service.app.converter.PaymentConverter;
+import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.repository.PaymentRepository;
-import com.iprody.payment.service.app.service.converter.PaymentConverter;
 import com.iprody.payment.service.app.service.payment.api.PaymentService;
 import com.iprody.payment.service.app.service.payment.model.Payment;
+import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
+import com.iprody.payment.service.app.service.payment.util.PaymentFilterFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,5 +33,14 @@ public class PaymentServiceImpl implements PaymentService {
     public Optional<Payment> findPaymentById(UUID id) {
         return paymentRepository.findById(id)
                 .map(paymentConverter::toModel);
+    }
+
+    @Override
+    public List<Payment> searchByFilter(PaymentFilter paymentFilter) {
+        final Specification<PaymentEntity> specification = PaymentFilterFactory.fromFilter(paymentFilter);
+
+        return paymentRepository.findAll(specification).stream()
+                .map(paymentConverter::toModel)
+                .toList();
     }
 }

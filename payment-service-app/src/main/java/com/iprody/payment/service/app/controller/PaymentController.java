@@ -1,13 +1,11 @@
 package com.iprody.payment.service.app.controller;
 
+import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import com.iprody.payment.service.app.service.payment.api.PaymentService;
 import com.iprody.payment.service.app.service.payment.model.Payment;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +26,12 @@ public class PaymentController {
     @GetMapping
     public ResponseEntity<List<Payment>> getAllPayments() {
         final List<Payment> result = paymentService.getAllPayments();
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Payment>> searchByFilter(@ModelAttribute PaymentFilter paymentFilter) {
+        final List<Payment> result = paymentService.searchByFilter(paymentFilter);
         return ResponseEntity.ok(result);
     }
 }

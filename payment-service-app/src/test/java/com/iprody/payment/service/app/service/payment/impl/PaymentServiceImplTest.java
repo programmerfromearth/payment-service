@@ -2,7 +2,7 @@ package com.iprody.payment.service.app.service.payment.impl;
 
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.repository.PaymentRepository;
-import com.iprody.payment.service.app.service.converter.PaymentConverter;
+import com.iprody.payment.service.app.converter.PaymentConverter;
 import com.iprody.payment.service.app.service.payment.model.Payment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
