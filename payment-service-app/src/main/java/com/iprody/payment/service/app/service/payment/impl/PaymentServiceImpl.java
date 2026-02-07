@@ -8,6 +8,8 @@ import com.iprody.payment.service.app.service.payment.model.Payment;
 import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import com.iprody.payment.service.app.service.payment.util.PaymentFilterFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -36,11 +38,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<Payment> searchByFilter(PaymentFilter paymentFilter) {
+    public Page<Payment> searchByFilter(PaymentFilter paymentFilter, Pageable pageable) {
         final Specification<PaymentEntity> specification = PaymentFilterFactory.fromFilter(paymentFilter);
 
-        return paymentRepository.findAll(specification).stream()
-                .map(paymentConverter::toModel)
-                .toList();
+        return paymentRepository.findAll(specification, pageable)
+                .map(paymentConverter::toModel);
     }
 }
