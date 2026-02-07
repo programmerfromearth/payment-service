@@ -15,5 +15,5 @@ public interface PaymentService {
 
     Optional<Payment> findPaymentById(UUID id);
 
-    Page<Payment> searchByFilter(PaymentFilter paymentFilter, Pageable pageable);
+    Page<Payment> searchPagedByFilter(PaymentFilter paymentFilter, Pageable pageable);
 }

@@ -32,11 +32,11 @@ public class PaymentController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<Page<Payment>> searchByFilter(@ModelAttribute PaymentFilter paymentFilter,
-                                                        @PageableDefault(page = 0, size = 25)
+    @GetMapping("/search")
+    public ResponseEntity<Page<Payment>> searchPagedByFilter(@ModelAttribute PaymentFilter paymentFilter,
+                                                             @PageableDefault(page = 0, size = 25)
                                                         Pageable pageable) {
-        final Page<Payment> result = paymentService.searchByFilter(paymentFilter, pageable);
+        final Page<Payment> result = paymentService.searchPagedByFilter(paymentFilter, pageable);
         return ResponseEntity.ok(result);
     }
 }

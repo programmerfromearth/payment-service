@@ -38,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Page<Payment> searchByFilter(PaymentFilter paymentFilter, Pageable pageable) {
+    public Page<Payment> searchPagedByFilter(PaymentFilter paymentFilter, Pageable pageable) {
         final Specification<PaymentEntity> specification = PaymentFilterFactory.fromFilter(paymentFilter);
 
         return paymentRepository.findAll(specification, pageable)
