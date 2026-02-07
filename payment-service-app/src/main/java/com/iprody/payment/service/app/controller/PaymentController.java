@@ -1,8 +1,8 @@
 package com.iprody.payment.service.app.controller;
 
-import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import com.iprody.payment.service.app.service.payment.api.PaymentService;
 import com.iprody.payment.service.app.service.payment.model.Payment;
+import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,9 +33,9 @@ public class PaymentController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<Payment>> searchPagedByFilter(@ModelAttribute PaymentFilter paymentFilter,
-                                                             @PageableDefault(page = 0, size = 25)
-                                                        Pageable pageable) {
+    public ResponseEntity<Page<Payment>> searchPagedByFilter(
+            @ModelAttribute PaymentFilter paymentFilter,
+            @PageableDefault(page = 0, size = 25) Pageable pageable) {
         final Page<Payment> result = paymentService.searchPagedByFilter(paymentFilter, pageable);
         return ResponseEntity.ok(result);
     }
