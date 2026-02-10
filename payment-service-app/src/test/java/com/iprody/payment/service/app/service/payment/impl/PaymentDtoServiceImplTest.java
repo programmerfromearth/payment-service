@@ -1,9 +1,9 @@
 package com.iprody.payment.service.app.service.payment.impl;
 
+import com.iprody.payment.service.app.mapper.PaymentMapper;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.repository.PaymentRepository;
-import com.iprody.payment.service.app.converter.PaymentConverter;
-import com.iprody.payment.service.app.service.payment.model.Payment;
+import com.iprody.payment.service.app.service.payment.model.PaymentDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,13 +19,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PaymentServiceImplTest {
+class PaymentDtoServiceImplTest {
 
     @Mock
     private PaymentRepository paymentRepository;
 
     @Mock
-    private PaymentConverter paymentConverter;
+    private PaymentMapper paymentMapper;
 
     @InjectMocks
     private PaymentServiceImpl paymentService;
@@ -33,17 +33,17 @@ class PaymentServiceImplTest {
     @Test
     void whenPaymentsExistThenReturnMappedList() {
         PaymentEntity entity = new PaymentEntity();
-        Payment model = Payment.builder().guid(UUID.randomUUID()).build();
+        PaymentDto model = PaymentDto.builder().guid(UUID.randomUUID()).build();
 
         when(paymentRepository.findAll()).thenReturn(List.of(entity));
-        when(paymentConverter.toModel(entity)).thenReturn(model);
+        when(paymentMapper.toDto(entity)).thenReturn(model);
 
-        List<Payment> result = paymentService.getAllPayments();
+        List<PaymentDto> result = paymentService.getAllPayments();
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst()).isEqualTo(model);
         verify(paymentRepository).findAll();
-        verify(paymentConverter).toModel(any());
+        verify(paymentMapper).toDto(any());
     }
 
     @Test
@@ -51,12 +51,12 @@ class PaymentServiceImplTest {
         UUID id = UUID.randomUUID();
 
         PaymentEntity entity = new PaymentEntity();
-        Payment model = Payment.builder().guid(id).build();
+        PaymentDto model = PaymentDto.builder().guid(id).build();
 
         when(paymentRepository.findById(id)).thenReturn(Optional.of(entity));
-        when(paymentConverter.toModel(entity)).thenReturn(model);
+        when(paymentMapper.toDto(entity)).thenReturn(model);
 
-        Optional<Payment> result = paymentService.findPaymentById(id);
+        Optional<PaymentDto> result = paymentService.findPaymentById(id);
 
         assertThat(result).isPresent().contains(model);
     }
@@ -67,9 +67,9 @@ class PaymentServiceImplTest {
 
         when(paymentRepository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<Payment> result = paymentService.findPaymentById(id);
+        Optional<PaymentDto> result = paymentService.findPaymentById(id);
 
         assertThat(result).isEmpty();
-        verifyNoInteractions(paymentConverter);
+        verifyNoInteractions(paymentMapper);
     }
 }

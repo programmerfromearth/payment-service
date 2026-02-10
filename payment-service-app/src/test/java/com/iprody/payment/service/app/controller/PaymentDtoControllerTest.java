@@ -1,7 +1,8 @@
 package com.iprody.payment.service.app.controller;
 
+import com.iprody.payment.service.app.controller.payment.PaymentController;
 import com.iprody.payment.service.app.service.payment.api.PaymentService;
-import com.iprody.payment.service.app.service.payment.model.Payment;
+import com.iprody.payment.service.app.service.payment.model.PaymentDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -17,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PaymentController.class)
-class PaymentControllerTest {
+class PaymentDtoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -29,15 +30,15 @@ class PaymentControllerTest {
     void whenIdExistsThenReturnPayment() throws Exception {
         final UUID id = UUID.randomUUID();
 
-        final Payment payment = Payment.builder()
+        final PaymentDto paymentDto = PaymentDto.builder()
                 .guid(id)
                 .build();
 
-        when(paymentService.findPaymentById(id)).thenReturn(Optional.of(payment));
+        when(paymentService.findPaymentById(id)).thenReturn(Optional.of(paymentDto));
 
         this.mockMvc.perform(get("/payments/{id}", id))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.guid").value(payment.guid().toString()));
+                .andExpect(jsonPath("$.guid").value(paymentDto.guid().toString()));
     }
 
     @Test
@@ -53,17 +54,17 @@ class PaymentControllerTest {
 
     @Test
     void whenPaymentsExistThenReturnList() throws Exception {
-        final Payment payment = Payment.builder()
+        final PaymentDto paymentDto = PaymentDto.builder()
                 .guid(UUID.randomUUID())
                 .build();
 
-        final List<Payment> payments = List.of(payment);
+        final List<PaymentDto> paymentDtos = List.of(paymentDto);
 
-        when(paymentService.getAllPayments()).thenReturn(payments);
+        when(paymentService.getAllPayments()).thenReturn(paymentDtos);
 
         this.mockMvc.perform(get("/payments"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].guid").value(payment.guid().toString()));
+                .andExpect(jsonPath("$[0].guid").value(paymentDto.guid().toString()));
     }
 }
