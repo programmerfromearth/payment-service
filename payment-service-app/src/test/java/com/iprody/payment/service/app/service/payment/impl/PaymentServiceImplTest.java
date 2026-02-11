@@ -34,7 +34,7 @@ class PaymentServiceImplTest {
     private PaymentServiceImpl paymentService;
 
     @Test
-    void whenPaymentsExistThenReturnMappedList() {
+    void getAllPaymentsTest() {
         final PaymentEntity entity = new PaymentEntity();
         final PaymentDto model = PaymentDto.builder()
                 .guid(UUID.randomUUID())
@@ -51,7 +51,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void whenIdExistsThenReturnMappedPayment() {
+    void findPaymentByIdTest() {
         final UUID id = UUID.randomUUID();
 
         final PaymentEntity entity = new PaymentEntity();
@@ -68,7 +68,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void whenIdNotExistsThenReturnEmpty() {
+    void findPaymentByIdWhenPaymentsNotExist() {
         final UUID id = UUID.randomUUID();
 
         when(paymentRepository.findById(id)).thenReturn(Optional.empty());
@@ -81,7 +81,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void whenIdNotExistsThenReturnEmpty1() {
+    void searchPagedByFilterTest() {
         final PaymentFilter paymentFilter = PaymentFilter.builder().build();
         final Pageable pageable = Pageable.unpaged();
 
