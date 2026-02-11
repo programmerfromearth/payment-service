@@ -1,7 +1,6 @@
-package com.iprody.payment.service.app.service.payment.util;
+package com.iprody.payment.service.app.persistency.specification;
 
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
-import com.iprody.payment.service.app.persistency.specification.PaymentSpecification;
 import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
