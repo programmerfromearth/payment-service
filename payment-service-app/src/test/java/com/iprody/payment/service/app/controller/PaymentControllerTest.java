@@ -69,7 +69,7 @@ class PaymentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(json.write(paymentResponse).getJson()));
 
-        InOrder inOrder = inOrder(paymentMapper, paymentService);
+        final InOrder inOrder = inOrder(paymentMapper, paymentService);
         inOrder.verify(paymentService).findPaymentById(id);
         inOrder.verify(paymentMapper).toApiResponse(paymentDto);
     }
@@ -84,7 +84,7 @@ class PaymentControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(""));
 
-        InOrder inOrder = inOrder(paymentMapper, paymentService);
+        final InOrder inOrder = inOrder(paymentMapper, paymentService);
         inOrder.verify(paymentService).findPaymentById(id);
         inOrder.verify(paymentMapper, never()).toApiResponse(any());
     }
@@ -118,7 +118,7 @@ class PaymentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonList.write(paymentResponses).getJson()));
 
-        InOrder inOrder = inOrder(paymentMapper, paymentService);
+        final InOrder inOrder = inOrder(paymentMapper, paymentService);
         inOrder.verify(paymentService).getAllPayments();
         inOrder.verify(paymentMapper).toApiResponse(paymentDto1);
         inOrder.verify(paymentMapper).toApiResponse(paymentDto2);
@@ -136,7 +136,7 @@ class PaymentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonList.write(paymentResponses).getJson()));
 
-        InOrder inOrder = inOrder(paymentMapper, paymentService);
+        final InOrder inOrder = inOrder(paymentMapper, paymentService);
         inOrder.verify(paymentService).getAllPayments();
         inOrder.verify(paymentMapper, never()).toApiResponse(any());
     }
@@ -193,7 +193,7 @@ class PaymentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonPage.write(paymentPage).getJson()));
 
-        InOrder inOrder = inOrder(paymentMapper, paymentService);
+        final InOrder inOrder = inOrder(paymentMapper, paymentService);
         inOrder.verify(paymentMapper).toPaymentFilter(any(PaymentFilterRequest.class));
         inOrder.verify(paymentService).searchPagedByFilter(eq(paymentFilter), any(Pageable.class));
         inOrder.verify(paymentMapper).toApiResponse(paymentDto1);
