@@ -32,13 +32,13 @@ class PaymentServiceImplTest {
 
     @Test
     void whenPaymentsExistThenReturnMappedList() {
-        PaymentEntity entity = new PaymentEntity();
-        Payment model = Payment.builder().guid(UUID.randomUUID()).build();
+        final PaymentEntity entity = new PaymentEntity();
+        final Payment model = Payment.builder().guid(UUID.randomUUID()).build();
 
         when(paymentRepository.findAll()).thenReturn(List.of(entity));
         when(paymentConverter.toModel(entity)).thenReturn(model);
 
-        List<Payment> result = paymentService.getAllPayments();
+        final List<Payment> result = paymentService.getAllPayments();
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst()).isEqualTo(model);
@@ -48,26 +48,26 @@ class PaymentServiceImplTest {
 
     @Test
     void whenIdExistsThenReturnMappedPayment() {
-        UUID id = UUID.randomUUID();
+        final UUID id = UUID.randomUUID();
 
-        PaymentEntity entity = new PaymentEntity();
-        Payment model = Payment.builder().guid(id).build();
+        final PaymentEntity entity = new PaymentEntity();
+        final Payment model = Payment.builder().guid(id).build();
 
         when(paymentRepository.findById(id)).thenReturn(Optional.of(entity));
         when(paymentConverter.toModel(entity)).thenReturn(model);
 
-        Optional<Payment> result = paymentService.findPaymentById(id);
+        final Optional<Payment> result = paymentService.findPaymentById(id);
 
         assertThat(result).isPresent().contains(model);
     }
 
     @Test
     void whenIdNotExistsThenReturnEmpty() {
-        UUID id = UUID.randomUUID();
+        final UUID id = UUID.randomUUID();
 
         when(paymentRepository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<Payment> result = paymentService.findPaymentById(id);
+        final Optional<Payment> result = paymentService.findPaymentById(id);
 
         assertThat(result).isEmpty();
         verifyNoInteractions(paymentConverter);
