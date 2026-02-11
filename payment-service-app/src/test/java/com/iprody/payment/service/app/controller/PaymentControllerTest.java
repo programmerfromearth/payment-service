@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(PaymentController.class)
 @AutoConfigureJsonTesters
-class PaymentDtoControllerTest {
+class PaymentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

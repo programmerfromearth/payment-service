@@ -22,7 +22,7 @@ import java.util.UUID;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PaymentDtoServiceImplTest {
+class PaymentServiceImplTest {
 
     @Mock
     private PaymentRepository paymentRepository;
