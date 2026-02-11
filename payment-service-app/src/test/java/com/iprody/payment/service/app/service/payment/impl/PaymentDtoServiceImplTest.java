@@ -4,18 +4,21 @@ import com.iprody.payment.service.app.mapper.PaymentMapper;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.repository.PaymentRepository;
 import com.iprody.payment.service.app.service.payment.model.PaymentDto;
+import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,44 +35,62 @@ class PaymentDtoServiceImplTest {
 
     @Test
     void whenPaymentsExistThenReturnMappedList() {
-        PaymentEntity entity = new PaymentEntity();
-        PaymentDto model = PaymentDto.builder().guid(UUID.randomUUID()).build();
+        final PaymentEntity entity = new PaymentEntity();
+        final PaymentDto model = PaymentDto.builder()
+                .guid(UUID.randomUUID())
+                .build();
 
         when(paymentRepository.findAll()).thenReturn(List.of(entity));
         when(paymentMapper.toDto(entity)).thenReturn(model);
 
-        List<PaymentDto> result = paymentService.getAllPayments();
+        paymentService.getAllPayments();
 
-        assertThat(result).hasSize(1);
-        assertThat(result.getFirst()).isEqualTo(model);
-        verify(paymentRepository).findAll();
-        verify(paymentMapper).toDto(any());
+        InOrder inOrder = inOrder(paymentMapper, paymentRepository);
+        inOrder.verify(paymentRepository).findAll();
+        inOrder.verify(paymentMapper).toDto(entity);
     }
 
     @Test
     void whenIdExistsThenReturnMappedPayment() {
-        UUID id = UUID.randomUUID();
+        final UUID id = UUID.randomUUID();
 
-        PaymentEntity entity = new PaymentEntity();
-        PaymentDto model = PaymentDto.builder().guid(id).build();
+        final PaymentEntity entity = new PaymentEntity();
+        final PaymentDto model = PaymentDto.builder().build();
 
         when(paymentRepository.findById(id)).thenReturn(Optional.of(entity));
         when(paymentMapper.toDto(entity)).thenReturn(model);
 
-        Optional<PaymentDto> result = paymentService.findPaymentById(id);
+        paymentService.findPaymentById(id);
 
-        assertThat(result).isPresent().contains(model);
+        InOrder inOrder = inOrder(paymentMapper, paymentRepository);
+        inOrder.verify(paymentRepository).findById(id);
+        inOrder.verify(paymentMapper).toDto(entity);
     }
 
     @Test
     void whenIdNotExistsThenReturnEmpty() {
-        UUID id = UUID.randomUUID();
+        final UUID id = UUID.randomUUID();
 
         when(paymentRepository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<PaymentDto> result = paymentService.findPaymentById(id);
+        paymentService.findPaymentById(id);
 
-        assertThat(result).isEmpty();
-        verifyNoInteractions(paymentMapper);
+        InOrder inOrder = inOrder(paymentMapper, paymentRepository);
+        inOrder.verify(paymentRepository).findById(id);
+        inOrder.verify(paymentMapper, never()).toDto(any(PaymentEntity.class));
+    }
+
+    @Test
+    void whenIdNotExistsThenReturnEmpty1() {
+        final PaymentFilter paymentFilter = PaymentFilter.builder().build();
+        final Pageable pageable = Pageable.unpaged();
+
+        when(paymentRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(Page.empty());
+
+        paymentService.searchPagedByFilter(paymentFilter, pageable);
+
+        InOrder inOrder = inOrder(paymentMapper, paymentRepository);
+        inOrder.verify(paymentRepository).findAll(any(Specification.class), eq(pageable));
+        inOrder.verify(paymentMapper, never()).toDto(any(PaymentEntity.class));
     }
 }

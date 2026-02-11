@@ -1,10 +1,12 @@
 package com.iprody.payment.service.app.controller.payment.model;
 
 import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+@Builder
 public record PaymentFilterRequest(
         PaymentStatus status,
         String currency,
