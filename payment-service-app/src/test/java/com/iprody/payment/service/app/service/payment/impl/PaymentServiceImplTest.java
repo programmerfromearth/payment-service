@@ -11,6 +11,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,8 +21,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = STRICT_STUBS)
 class PaymentServiceImplTest {
 
     @Mock
