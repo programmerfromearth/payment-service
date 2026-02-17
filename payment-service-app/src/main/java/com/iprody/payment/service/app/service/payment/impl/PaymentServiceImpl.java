@@ -1,12 +1,12 @@
 package com.iprody.payment.service.app.service.payment.impl;
 
-import com.iprody.payment.service.app.converter.PaymentConverter;
+import com.iprody.payment.service.app.mapper.PaymentMapper;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.repository.PaymentRepository;
 import com.iprody.payment.service.app.service.payment.api.PaymentService;
-import com.iprody.payment.service.app.service.payment.model.Payment;
+import com.iprody.payment.service.app.service.payment.model.PaymentDto;
+import com.iprody.payment.service.app.persistency.specification.PaymentFilterFactory;
 import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
-import com.iprody.payment.service.app.service.payment.util.PaymentFilterFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,26 +22,26 @@ import java.util.UUID;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final PaymentConverter paymentConverter;
+    private final PaymentMapper paymentMapper;
 
     @Override
-    public List<Payment> getAllPayments() {
+    public List<PaymentDto> getAllPayments() {
         return paymentRepository.findAll().stream()
-                .map(paymentConverter::toModel)
+                .map(paymentMapper::toDto)
                 .toList();
     }
 
     @Override
-    public Optional<Payment> findPaymentById(UUID id) {
+    public Optional<PaymentDto> findPaymentById(UUID id) {
         return paymentRepository.findById(id)
-                .map(paymentConverter::toModel);
+                .map(paymentMapper::toDto);
     }
 
     @Override
-    public Page<Payment> searchPagedByFilter(PaymentFilter paymentFilter, Pageable pageable) {
+    public Page<PaymentDto> searchPagedByFilter(PaymentFilter paymentFilter, Pageable pageable) {
         final Specification<PaymentEntity> specification = PaymentFilterFactory.fromFilter(paymentFilter);
 
         return paymentRepository.findAll(specification, pageable)
-                .map(paymentConverter::toModel);
+                .map(paymentMapper::toDto);
     }
 }

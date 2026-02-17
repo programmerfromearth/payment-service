@@ -1,14 +1,14 @@
-package com.iprody.payment.service.app.service.payment.model;
+package com.iprody.payment.service.app.controller.payment.model;
 
 import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
-import lombok.*;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Builder
-public record Payment(
+public record PaymentResponse(
         UUID guid,
         UUID inquiryRefId,
         BigDecimal amount,
