@@ -244,33 +244,4 @@ class PaymentFilterFactoryTest {
         inOrder.verify(criteriaBuilderMock).and(combined2, createdAtPredicate);
         inOrder.verifyNoMoreInteractions();
     }
-
-//    @ParameterizedTest
-//    @MethodSource("statusProvider")
-//    void searchPagedByFilterParameterizedTest() {
-//        final PaymentFilter paymentFilter = PaymentFilter.builder().build();
-//        final Pageable pageable = Pageable.unpaged();
-//
-//        when(paymentRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(Page.empty());
-//
-//        paymentService.searchPagedByFilter(paymentFilter, pageable);
-//
-//        final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
-//        inOrder.verify(paymentRepository).findAll(any(Specification.class), eq(pageable));
-//        inOrder.verify(paymentMapper, never()).toDto(any(PaymentEntity.class));
-//    }
-//
-//
-//    static Stream<Arguments> statusProvider() {
-//        return Stream.of(
-//                Arguments.of(
-//                        RECEIVED,
-//                        "USD",
-//                        BigDecimal.ZERO,
-//                        BigDecimal.TWO,
-//                        OffsetDateTime.now(),
-//                        OffsetDateTime.now())
-//        );
-//    }
-
 }
