@@ -51,6 +51,7 @@ class PaymentServiceImplTest {
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findAll();
         inOrder.verify(paymentMapper).toDto(entity);
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -68,6 +69,7 @@ class PaymentServiceImplTest {
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findById(id);
         inOrder.verify(paymentMapper).toDto(entity);
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -81,6 +83,7 @@ class PaymentServiceImplTest {
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findById(id);
         inOrder.verify(paymentMapper, never()).toDto(any(PaymentEntity.class));
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -95,5 +98,6 @@ class PaymentServiceImplTest {
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findAll(any(Specification.class), eq(pageable));
         inOrder.verify(paymentMapper, never()).toDto(any(PaymentEntity.class));
+        inOrder.verifyNoMoreInteractions();
     }
 }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -16,22 +17,29 @@ import java.util.UUID;
 
 import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.RECEIVED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = STRICT_STUBS)
 class PaymentMapperTest {
 
     private final PaymentMapper mapper = Mappers.getMapper(PaymentMapper.class);
 
     @Test
     void shouldNullWhenMapToDto() {
-        PaymentDto dto = mapper.toDto(null);
+        // given
 
+        // when
+        final PaymentDto dto = mapper.toDto(null);
+
+        // then
         assertThat(dto).isNull();
     }
 
     @Test
     void shouldMapToDto() {
+        // given
         final PaymentEntity entity = new PaymentEntity();
         entity.setGuid(UUID.randomUUID());
         entity.setInquiryRefId(UUID.randomUUID());
@@ -43,8 +51,10 @@ class PaymentMapperTest {
         entity.setCreatedAt(OffsetDateTime.now());
         entity.setUpdatedAt(OffsetDateTime.now());
 
+        // when
         final PaymentDto dto = mapper.toDto(entity);
 
+        // then
         assertThat(dto).isNotNull();
         assertThat(dto.guid()).isEqualTo(entity.getGuid());
         assertThat(dto.inquiryRefId()).isEqualTo(entity.getInquiryRefId());
@@ -59,13 +69,18 @@ class PaymentMapperTest {
 
     @Test
     void shouldNullWhenMapToApiResponse() {
-        PaymentResponse apiResponse = mapper.toApiResponse(null);
+        // given
 
+        // when
+        final PaymentResponse apiResponse = mapper.toApiResponse(null);
+
+        // then
         assertThat(apiResponse).isNull();
     }
 
     @Test
     void shouldMapToApiResponse() {
+        // given
         final PaymentDto dto = PaymentDto.builder()
                 .guid(UUID.randomUUID())
                 .inquiryRefId(UUID.randomUUID())
@@ -78,8 +93,10 @@ class PaymentMapperTest {
                 .updatedAt(OffsetDateTime.now())
                 .build();
 
+        // when
         final PaymentResponse apiResponse = mapper.toApiResponse(dto);
 
+        // then
         assertThat(apiResponse).isNotNull();
         assertThat(apiResponse.guid()).isEqualTo(dto.guid());
         assertThat(apiResponse.inquiryRefId()).isEqualTo(dto.inquiryRefId());
@@ -94,13 +111,18 @@ class PaymentMapperTest {
 
     @Test
     void shouldNullWhenMapToPaymentFilter() {
-        PaymentFilter filter = mapper.toPaymentFilter(null);
+        // given
 
+        // when
+        final PaymentFilter filter = mapper.toPaymentFilter(null);
+
+        // then
         assertThat(filter).isNull();
     }
 
     @Test
     void shouldMapToPaymentFilter() {
+        // given
         final PaymentFilterRequest request = PaymentFilterRequest.builder()
                 .status(RECEIVED)
                 .currency("USD")
@@ -110,8 +132,10 @@ class PaymentMapperTest {
                 .createdBefore(OffsetDateTime.now())
                 .build();
 
+        // when
         final PaymentFilter apiResponse = mapper.toPaymentFilter(request);
 
+        // then
         assertThat(apiResponse).isNotNull();
         assertThat(apiResponse.status()).isEqualTo(request.status());
         assertThat(apiResponse.currency()).isEqualTo(request.currency());

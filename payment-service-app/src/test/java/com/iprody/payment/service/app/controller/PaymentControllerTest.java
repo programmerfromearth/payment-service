@@ -9,6 +9,7 @@ import com.iprody.payment.service.app.service.payment.model.PaymentDto;
 import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.json.JacksonTester;
@@ -28,12 +29,14 @@ import java.util.UUID;
 import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.RECEIVED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PaymentController.class)
 @AutoConfigureJsonTesters
+@MockitoSettings(strictness = STRICT_STUBS)
 class PaymentControllerTest {
 
     @Autowired
@@ -72,6 +75,7 @@ class PaymentControllerTest {
         final InOrder inOrder = inOrder(paymentMapper, paymentService);
         inOrder.verify(paymentService).findPaymentById(id);
         inOrder.verify(paymentMapper).toApiResponse(paymentDto);
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -87,6 +91,7 @@ class PaymentControllerTest {
         final InOrder inOrder = inOrder(paymentMapper, paymentService);
         inOrder.verify(paymentService).findPaymentById(id);
         inOrder.verify(paymentMapper, never()).toApiResponse(any());
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -122,6 +127,7 @@ class PaymentControllerTest {
         inOrder.verify(paymentService).getAllPayments();
         inOrder.verify(paymentMapper).toApiResponse(paymentDto1);
         inOrder.verify(paymentMapper).toApiResponse(paymentDto2);
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -139,6 +145,7 @@ class PaymentControllerTest {
         final InOrder inOrder = inOrder(paymentMapper, paymentService);
         inOrder.verify(paymentService).getAllPayments();
         inOrder.verify(paymentMapper, never()).toApiResponse(any());
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -198,5 +205,6 @@ class PaymentControllerTest {
         inOrder.verify(paymentService).searchPagedByFilter(eq(paymentFilter), any(Pageable.class));
         inOrder.verify(paymentMapper).toApiResponse(paymentDto1);
         inOrder.verify(paymentMapper).toApiResponse(paymentDto2);
+        inOrder.verifyNoMoreInteractions();
     }
 }
