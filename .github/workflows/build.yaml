@@ -1,5 +1,10 @@
 name: Build project for PR
 
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+
 on:
   pull_request:
     branches:
@@ -26,5 +31,28 @@ jobs:
       - name: Compile with Maven
         run: mvn -B clean compile
 
-      - name: Run tests
-        run: mvn -B test
+      - name: Run tests and generate coverage report
+        run: mvn -B test prepare-package
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: |
+            payment-service-app/target/site/jacoco/jacoco.xml
+            payment-service-app/target/site/jacoco/index.html
+            .github/badges/*.svg
+
+      - name: Add coverage to PR
+        if: github.event_name == 'pull_request'
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: |
+            payment-service-app/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 80
+          min-coverage-changed-files: 70
+          title: Code Coverage Report
+          update-comment: true
+          pass-emoji: ✅
+          fail-emoji: ❌
