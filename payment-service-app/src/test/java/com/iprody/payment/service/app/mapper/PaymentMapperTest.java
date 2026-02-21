@@ -32,9 +32,10 @@ class PaymentMapperTest {
     @Test
     void shouldNullWhenMapToDto() {
         // given
+        final PaymentEntity entity = null;
 
         // when
-        final PaymentDto dto = mapper.toDto(null);
+        final PaymentDto dto = mapper.toDto(entity);
 
         // then
         assertThat(dto).isNull();
@@ -73,9 +74,10 @@ class PaymentMapperTest {
     @Test
     void shouldNullWhenMapToApiResponse() {
         // given
+        final PaymentDto dto = null;
 
         // when
-        final PaymentResponse apiResponse = mapper.toApiResponse(null);
+        final PaymentResponse apiResponse = mapper.toApiResponse(dto);
 
         // then
         assertThat(apiResponse).isNull();
@@ -115,9 +117,10 @@ class PaymentMapperTest {
     @Test
     void shouldNullWhenMapToPaymentFilter() {
         // given
+        final PaymentFilterRequest filterRequest = null;
 
         // when
-        final PaymentFilter filter = mapper.toPaymentFilter(null);
+        final PaymentFilter filter = mapper.toPaymentFilter(filterRequest);
 
         // then
         assertThat(filter).isNull();
