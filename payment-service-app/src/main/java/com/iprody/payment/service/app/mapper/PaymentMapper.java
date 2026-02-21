@@ -2,6 +2,7 @@ package com.iprody.payment.service.app.mapper;
 
 import com.iprody.payment.service.app.controller.payment.model.PaymentFilterRequest;
 import com.iprody.payment.service.app.controller.payment.model.PaymentResponse;
+import com.iprody.payment.service.app.controller.payment.model.PaymentToCreateRequest;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.service.payment.model.PaymentDto;
 import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
@@ -10,11 +11,13 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PaymentMapper {
+    PaymentEntity toEntity(PaymentDto dto);
 
     PaymentDto toDto(PaymentEntity entity);
+
+    PaymentDto toDto(PaymentToCreateRequest request);
 
     PaymentResponse toApiResponse(PaymentDto dto);
 
     PaymentFilter toPaymentFilter(PaymentFilterRequest paymentFilterRequest);
-
 }

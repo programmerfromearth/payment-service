@@ -2,6 +2,7 @@ package com.iprody.payment.service.app.persistency.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Setter
 public class PaymentEntity {
     @Id
+    @UuidGenerator
     @Column(nullable = false, unique = true)
     private UUID guid;
 
