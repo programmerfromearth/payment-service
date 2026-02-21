@@ -3,17 +3,22 @@ package com.iprody.payment.service.app.mapper;
 import com.iprody.payment.service.app.controller.payment.model.PaymentFilterRequest;
 import com.iprody.payment.service.app.controller.payment.model.PaymentResponse;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
+import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
 import com.iprody.payment.service.app.service.payment.model.PaymentDto;
 import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.RECEIVED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -120,17 +125,11 @@ class PaymentMapperTest {
         assertThat(filter).isNull();
     }
 
-    @Test
-    void shouldMapToPaymentFilter() {
+    @ParameterizedTest
+    @MethodSource("statusProvider")
+    void shouldMapToPaymentFilter(PaymentStatus status) {
         // given
-        final PaymentFilterRequest request = PaymentFilterRequest.builder()
-                .status(RECEIVED)
-                .currency("USD")
-                .minAmount(BigDecimal.ZERO)
-                .maxAmount(BigDecimal.ONE)
-                .createdAfter(OffsetDateTime.now())
-                .createdBefore(OffsetDateTime.now())
-                .build();
+        final PaymentFilterRequest request = buildPaymentFilterRequestByStatus(status);
 
         // when
         final PaymentFilter apiResponse = mapper.toPaymentFilter(request);
@@ -143,5 +142,20 @@ class PaymentMapperTest {
         assertThat(apiResponse.maxAmount()).isEqualTo(request.maxAmount());
         assertThat(apiResponse.createdAfter()).isEqualTo(request.createdAfter());
         assertThat(apiResponse.createdBefore()).isEqualTo(request.createdBefore());
+    }
+
+    static Stream<PaymentStatus> statusProvider() {
+        return Arrays.stream(PaymentStatus.values());
+    }
+
+    private PaymentFilterRequest buildPaymentFilterRequestByStatus(PaymentStatus status) {
+        return PaymentFilterRequest.builder()
+                .status(status)
+                .currency("USD")
+                .minAmount(BigDecimal.ZERO)
+                .maxAmount(BigDecimal.ONE)
+                .createdAfter(OffsetDateTime.now())
+                .createdBefore(OffsetDateTime.now())
+                .build();
     }
 }
