@@ -3,6 +3,8 @@ package com.iprody.payment.service.app.controller;
 import com.iprody.payment.service.app.controller.payment.PaymentController;
 import com.iprody.payment.service.app.controller.payment.model.PaymentFilterRequest;
 import com.iprody.payment.service.app.controller.payment.model.PaymentResponse;
+import com.iprody.payment.service.app.controller.payment.model.PaymentToCreateRequest;
+import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
 import com.iprody.payment.service.app.mapper.PaymentMapper;
 import com.iprody.payment.service.app.service.payment.api.PaymentService;
 import com.iprody.payment.service.app.service.payment.model.PaymentDto;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,12 +30,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.RECEIVED;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PaymentController.class)
 @AutoConfigureJsonTesters
@@ -47,6 +50,10 @@ class PaymentControllerTest {
     private JacksonTester<List<PaymentResponse>> jsonList;
     @Autowired
     private JacksonTester<Page<PaymentResponse>> jsonPage;
+    @Autowired
+    private JacksonTester<PaymentToCreateRequest> jsonCreate;
+    @Autowired
+    private JacksonTester<PaymentToPartUpdateRequest> jsonPartUpdate;
 
     @MockitoBean
     private PaymentService paymentService;
@@ -205,6 +212,99 @@ class PaymentControllerTest {
         inOrder.verify(paymentService).searchPagedByFilter(eq(paymentFilter), any(Pageable.class));
         inOrder.verify(paymentMapper).toApiResponse(paymentDto1);
         inOrder.verify(paymentMapper).toApiResponse(paymentDto2);
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void cratePaymentTest() throws Exception {
+        final UUID guid = UUID.randomUUID();
+
+        final PaymentToCreateRequest toCreateRequest = PaymentToCreateRequest.builder().build();
+        final PaymentDto dtoToCreate = PaymentDto.builder().build();
+        final PaymentDto dtoResult = PaymentDto.builder().build();
+        final PaymentResponse apiResponse = PaymentResponse.builder()
+                .guid(guid)
+                .build();
+
+        when(paymentMapper.toDto(toCreateRequest)).thenReturn(dtoToCreate);
+        when(paymentService.create(dtoToCreate)).thenReturn(dtoResult);
+        when(paymentMapper.toApiResponse(dtoResult)).thenReturn(apiResponse);
+
+        this.mockMvc.perform(post("/payments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCreate.write(toCreateRequest).getJson()))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"))
+                .andExpect(header().string("Location", containsString("/payments/" + guid)))
+                .andExpect(content().string(json.write(apiResponse).getJson()));
+
+        final InOrder inOrder = inOrder(paymentMapper, paymentService);
+        inOrder.verify(paymentMapper).toDto(toCreateRequest);
+        inOrder.verify(paymentService).create(dtoToCreate);
+        inOrder.verify(paymentMapper).toApiResponse(dtoResult);
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void updatePaymentTest() throws Exception {
+        final UUID guid = UUID.randomUUID();
+
+        final PaymentToCreateRequest toUpdateRequest = PaymentToCreateRequest.builder().build();
+        final PaymentDto dtoToUpdate = PaymentDto.builder().build();
+        final PaymentDto dtoResult = PaymentDto.builder().build();
+        final PaymentResponse apiResponse = PaymentResponse.builder().build();
+
+        when(paymentMapper.toDto(toUpdateRequest)).thenReturn(dtoToUpdate);
+        when(paymentService.update(guid, dtoToUpdate)).thenReturn(dtoResult);
+        when(paymentMapper.toApiResponse(dtoResult)).thenReturn(apiResponse);
+
+        this.mockMvc.perform(put("/payments/{id}", guid)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCreate.write(toUpdateRequest).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(json.write(apiResponse).getJson()));
+
+        final InOrder inOrder = inOrder(paymentMapper, paymentService);
+        inOrder.verify(paymentMapper).toDto(toUpdateRequest);
+        inOrder.verify(paymentService).update(guid, dtoToUpdate);
+        inOrder.verify(paymentMapper).toApiResponse(dtoResult);
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void updatePartPaymentTest() throws Exception {
+        final UUID guid = UUID.randomUUID();
+
+        final PaymentToPartUpdateRequest toPartUpdateRequest = PaymentToPartUpdateRequest.builder().build();
+        final PaymentDto dtoResult = PaymentDto.builder().build();
+        final PaymentResponse apiResponse = PaymentResponse.builder().build();
+
+        when(paymentService.updateNote(guid, toPartUpdateRequest)).thenReturn(dtoResult);
+        when(paymentMapper.toApiResponse(dtoResult)).thenReturn(apiResponse);
+
+        this.mockMvc.perform(patch("/payments/{id}/note", guid)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPartUpdate.write(toPartUpdateRequest).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(json.write(apiResponse).getJson()));
+
+        final InOrder inOrder = inOrder(paymentMapper, paymentService);
+        inOrder.verify(paymentService).updateNote(guid, toPartUpdateRequest);
+        inOrder.verify(paymentMapper).toApiResponse(dtoResult);
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void deletePaymentTest() throws Exception {
+        final UUID guid = UUID.randomUUID();
+
+        doNothing().when(paymentService).deleteById(guid);
+
+        this.mockMvc.perform(delete("/payments/{id}", guid))
+                .andExpect(status().isNoContent());
+
+        final InOrder inOrder = inOrder(paymentMapper, paymentService);
+        inOrder.verify(paymentService).deleteById(guid);
         inOrder.verifyNoMoreInteractions();
     }
 }
