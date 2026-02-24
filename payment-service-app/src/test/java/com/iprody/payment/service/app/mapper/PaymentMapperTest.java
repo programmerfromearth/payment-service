@@ -2,6 +2,7 @@ package com.iprody.payment.service.app.mapper;
 
 import com.iprody.payment.service.app.controller.payment.model.PaymentFilterRequest;
 import com.iprody.payment.service.app.controller.payment.model.PaymentResponse;
+import com.iprody.payment.service.app.controller.payment.model.PaymentToCreateRequest;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
 import com.iprody.payment.service.app.service.payment.model.PaymentDto;
@@ -126,23 +127,106 @@ class PaymentMapperTest {
         assertThat(filter).isNull();
     }
 
+    @Test
+    void shouldMapToPaymentEntity() {
+        // given
+        final PaymentDto dto = PaymentDto.builder()
+                .guid(UUID.randomUUID())
+                .inquiryRefId(UUID.randomUUID())
+                .amount(BigDecimal.ZERO)
+                .currency("USD")
+                .transactionRefId(UUID.randomUUID())
+                .status(RECEIVED)
+                .note("note")
+                .createdAt(OffsetDateTime.now())
+                .updatedAt(OffsetDateTime.now())
+                .build();
+
+        // when
+        final PaymentEntity entity = mapper.toEntity(dto);
+
+        // then
+        assertThat(entity).isNotNull();
+        assertThat(entity.getGuid()).isEqualTo(dto.guid());
+        assertThat(entity.getInquiryRefId()).isEqualTo(dto.inquiryRefId());
+        assertThat(entity.getAmount()).isEqualTo(dto.amount());
+        assertThat(entity.getCurrency()).isEqualTo(dto.currency());
+        assertThat(entity.getTransactionRefId()).isEqualTo(dto.transactionRefId());
+        assertThat(entity.getStatus()).isEqualTo(dto.status());
+        assertThat(entity.getNote()).isEqualTo(dto.note());
+        assertThat(entity.getCreatedAt()).isEqualTo(dto.createdAt());
+        assertThat(entity.getUpdatedAt()).isEqualTo(dto.updatedAt());
+    }
+
+    @Test
+    void shouldNullWhenMapToPaymentEntity() {
+        // given
+        final PaymentDto dto = null;
+
+        // when
+        final PaymentEntity filter = mapper.toEntity(dto);
+
+        // then
+        assertThat(filter).isNull();
+    }
+
+    @Test
+    void shouldMapToPaymentDtoFromPaymentToCreateRequest() {
+        // given
+        final PaymentToCreateRequest toCreateRequest = PaymentToCreateRequest.builder()
+                .inquiryRefId(UUID.randomUUID())
+                .amount(BigDecimal.ZERO)
+                .currency("USD")
+                .transactionRefId(UUID.randomUUID())
+                .status(RECEIVED)
+                .note("note")
+                .build();
+
+        // when
+        final PaymentDto dto = mapper.toDto(toCreateRequest);
+
+        // then
+        assertThat(dto).isNotNull();
+        assertThat(dto.guid()).isNull();
+        assertThat(dto.inquiryRefId()).isEqualTo(toCreateRequest.inquiryRefId());
+        assertThat(dto.amount()).isEqualTo(toCreateRequest.amount());
+        assertThat(dto.currency()).isEqualTo(toCreateRequest.currency());
+        assertThat(dto.transactionRefId()).isEqualTo(toCreateRequest.transactionRefId());
+        assertThat(dto.status()).isEqualTo(toCreateRequest.status());
+        assertThat(dto.note()).isEqualTo(toCreateRequest.note());
+        assertThat(dto.createdAt()).isNull();
+        assertThat(dto.updatedAt()).isNull();
+    }
+
+    @Test
+    void shouldNullWhenMapToPaymentDto() {
+        // given
+        final PaymentToCreateRequest toCreateRequest = null;
+
+        // when
+        final PaymentDto filter = mapper.toDto(toCreateRequest);
+
+        // then
+        assertThat(filter).isNull();
+    }
+
     @ParameterizedTest
     @EnumSource(PaymentStatus.class)
     void shouldMapToPaymentFilter(PaymentStatus status) {
         // given
-        final PaymentFilterRequest request = buildPaymentFilterRequestByStatus(status);
+        final PaymentFilterRequest filterRequest = buildPaymentFilterRequestByStatus(status);
 
         // when
-        final PaymentFilter apiResponse = mapper.toPaymentFilter(request);
+        final PaymentFilter apiResponse = mapper.toPaymentFilter(filterRequest);
 
         // then
         assertThat(apiResponse).isNotNull();
-        assertThat(apiResponse.status()).isEqualTo(request.status());
-        assertThat(apiResponse.currency()).isEqualTo(request.currency());
-        assertThat(apiResponse.minAmount()).isEqualTo(request.minAmount());
-        assertThat(apiResponse.maxAmount()).isEqualTo(request.maxAmount());
-        assertThat(apiResponse.createdAfter()).isEqualTo(request.createdAfter());
-        assertThat(apiResponse.createdBefore()).isEqualTo(request.createdBefore());
+        assertThat(apiResponse.status()).isEqualTo(filterRequest.status());
+        assertThat(apiResponse.currency()).isEqualTo(filterRequest.currency());
+        assertThat(apiResponse.minAmount()).isEqualTo(filterRequest.minAmount());
+        assertThat(apiResponse.maxAmount()).isEqualTo(filterRequest.maxAmount());
+        assertThat(apiResponse.createdAfter()).isEqualTo(filterRequest.createdAfter());
+        assertThat(apiResponse.createdBefore()).isEqualTo(filterRequest.createdBefore());
     }
 
     private PaymentFilterRequest buildPaymentFilterRequestByStatus(PaymentStatus status) {
