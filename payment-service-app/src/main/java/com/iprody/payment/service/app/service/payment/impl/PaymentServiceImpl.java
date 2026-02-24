@@ -1,7 +1,7 @@
 package com.iprody.payment.service.app.service.payment.impl;
 
 import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
-import com.iprody.payment.service.app.exception.EntityNotFoundException;
+import com.iprody.payment.service.app.exception.PaymentEntityNotFoundException;
 import com.iprody.payment.service.app.mapper.PaymentMapper;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.repository.PaymentRepository;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.iprody.payment.service.app.util.CommonConstants.NOT_FOUND_ENTITY_EXCEPTION_MESSAGE_TEMPLATE;
+import static com.iprody.payment.service.app.util.CommonConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,8 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDto getById(UUID id) {
         return findPaymentById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(NOT_FOUND_ENTITY_EXCEPTION_MESSAGE_TEMPLATE.formatted(id)));
+                .orElseThrow(() -> new PaymentEntityNotFoundException(id, GET));
     }
 
     @Override
@@ -76,7 +75,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDto update(UUID id, PaymentDto paymentToUpdate) {
         final PaymentEntity entity = paymentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(id));
+                .orElseThrow(() -> new PaymentEntityNotFoundException(id, UPDATE));
 
         updateEntity(paymentToUpdate, entity);
 
@@ -87,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDto updateNote(UUID id, PaymentToPartUpdateRequest toPartUpdateRequest) {
         final PaymentEntity entity = paymentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(id));
+                .orElseThrow(() -> new PaymentEntityNotFoundException(id, PART_UPDATE));
 
         updatePart(toPartUpdateRequest, entity);
 
@@ -99,7 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
     public void deleteById(UUID id) {
         paymentRepository.findById(id)
                 .ifPresentOrElse(paymentRepository::delete, () -> {
-                    throw new EntityNotFoundException(id);
+                    throw new PaymentEntityNotFoundException(id, DELETE);
                 });
     }
 
