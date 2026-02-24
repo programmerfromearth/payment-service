@@ -112,7 +112,6 @@ public class PaymentServiceImpl implements PaymentService {
         entity.setTransactionRefId(paymentToUpdate.transactionRefId());
         entity.setStatus(paymentToUpdate.status());
         entity.setNote(paymentToUpdate.note());
-        entity.setCreatedAt(now);
         entity.setUpdatedAt(now);
     }
 
