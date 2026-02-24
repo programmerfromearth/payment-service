@@ -48,6 +48,7 @@ class PaymentServiceImplTest {
 
     @Test
     void getAllPaymentsTest() {
+        // given
         final PaymentEntity entity = new PaymentEntity();
         final PaymentDto model = PaymentDto.builder()
                 .guid(UUID.randomUUID())
@@ -56,8 +57,10 @@ class PaymentServiceImplTest {
         when(paymentRepository.findAll()).thenReturn(List.of(entity));
         when(paymentMapper.toDto(entity)).thenReturn(model);
 
+        // when
         paymentService.getAllPayments();
 
+        // then
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findAll();
         inOrder.verify(paymentMapper).toDto(entity);
@@ -66,6 +69,7 @@ class PaymentServiceImplTest {
 
     @Test
     void findPaymentByIdTest() {
+        // given
         final UUID id = UUID.randomUUID();
 
         final PaymentEntity entity = new PaymentEntity();
@@ -74,8 +78,10 @@ class PaymentServiceImplTest {
         when(paymentRepository.findById(id)).thenReturn(Optional.of(entity));
         when(paymentMapper.toDto(entity)).thenReturn(model);
 
+        // when
         paymentService.findPaymentById(id);
 
+        // then
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findById(id);
         inOrder.verify(paymentMapper).toDto(entity);
@@ -84,12 +90,15 @@ class PaymentServiceImplTest {
 
     @Test
     void findPaymentByIdWhenPaymentsNotExist() {
+        // given
         final UUID id = UUID.randomUUID();
 
         when(paymentRepository.findById(id)).thenReturn(Optional.empty());
 
+        // when
         paymentService.findPaymentById(id);
 
+        // then
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findById(id);
         inOrder.verify(paymentMapper, never()).toDto(any(PaymentEntity.class));
@@ -98,13 +107,16 @@ class PaymentServiceImplTest {
 
     @Test
     void searchPagedByFilterTest() {
+        // given
         final PaymentFilter paymentFilter = PaymentFilter.builder().build();
         final Pageable pageable = Pageable.unpaged();
 
         when(paymentRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(Page.empty());
 
+        // when
         paymentService.searchPagedByFilter(paymentFilter, pageable);
 
+        // then
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findAll(any(Specification.class), eq(pageable));
         inOrder.verify(paymentMapper, never()).toDto(any(PaymentEntity.class));
@@ -113,12 +125,12 @@ class PaymentServiceImplTest {
 
     @Test
     void whenThereIsNoPaymentWithIdThenGetByIdThrowException() {
-        // Given
+        // given
         final UUID guid = UUID.randomUUID();
 
         when(paymentRepository.findById(guid)).thenReturn(Optional.empty());
 
-        // When & Then
+        // when & Then
         final IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> paymentService.getById(guid)
@@ -132,7 +144,7 @@ class PaymentServiceImplTest {
 
     @Test
     void getByIdTest() {
-        // Given
+        // given
         final UUID guid = UUID.randomUUID();
 
         final PaymentEntity entity = new PaymentEntity();
@@ -141,10 +153,10 @@ class PaymentServiceImplTest {
         when(paymentRepository.findById(guid)).thenReturn(Optional.of(entity));
         when(paymentMapper.toDto(entity)).thenReturn(dto);
 
-        // When
+        // when
         paymentService.getById(guid);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findById(guid);
         inOrder.verify(paymentMapper).toDto(entity);
@@ -153,7 +165,7 @@ class PaymentServiceImplTest {
 
     @Test
     void createTest() {
-        // Given
+        // given
         final PaymentDto paymentToCreate = PaymentDto.builder().build();
         final PaymentEntity entityToSave = new PaymentEntity();
         final PaymentEntity savedEntity = new PaymentEntity();
@@ -161,10 +173,10 @@ class PaymentServiceImplTest {
         when(paymentMapper.toEntity(paymentToCreate)).thenReturn(entityToSave);
         when(paymentRepository.save(entityToSave)).thenReturn(savedEntity);
 
-        // When
+        // when
         paymentService.create(paymentToCreate);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentMapper).toEntity(paymentToCreate);
         inOrder.verify(paymentRepository).save(paymentEntityCaptor.capture());
@@ -178,12 +190,12 @@ class PaymentServiceImplTest {
 
     @Test
     void whenThereIsNoPaymentWithIdThenUpdateThrowException() {
-        // Given
+        // given
         final UUID guid = UUID.randomUUID();
         final PaymentDto paymentToUpdate = PaymentDto.builder().build();
         when(paymentRepository.findById(guid)).thenReturn(Optional.empty());
 
-        // When & Then
+        // when & Then
         final EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
                 () -> paymentService.update(guid, paymentToUpdate)
@@ -197,7 +209,7 @@ class PaymentServiceImplTest {
 
     @Test
     void updateTest() {
-        // Given
+        // given
         final UUID guid = UUID.randomUUID();
         final PaymentDto paymentToUpdate = PaymentDto.builder()
                 .guid(UUID.randomUUID())
@@ -212,10 +224,10 @@ class PaymentServiceImplTest {
         final PaymentEntity entityToUpdate = new PaymentEntity();
         when(paymentRepository.findById(guid)).thenReturn(Optional.of(entityToUpdate));
 
-        // When
+        // when
         paymentService.update(guid, paymentToUpdate);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findById(guid);
         inOrder.verify(paymentMapper).toDto(entityToUpdate);
@@ -235,12 +247,12 @@ class PaymentServiceImplTest {
 
     @Test
     void whenThereIsNoPaymentWithIdThenUpdateNoteThrowException() {
-        // Given
+        // given
         final UUID guid = UUID.randomUUID();
         final PaymentToPartUpdateRequest toPartUpdateRequest = PaymentToPartUpdateRequest.builder().build();
         when(paymentRepository.findById(guid)).thenReturn(Optional.empty());
 
-        // When & Then
+        // when & Then
         final EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
                 () -> paymentService.updateNote(guid, toPartUpdateRequest)
@@ -254,7 +266,7 @@ class PaymentServiceImplTest {
 
     @Test
     void updateNoteTest() {
-        // Given
+        // given
         final UUID guid = UUID.randomUUID();
         final PaymentToPartUpdateRequest toPartUpdateRequest = PaymentToPartUpdateRequest.builder()
                 .note("note")
@@ -263,10 +275,10 @@ class PaymentServiceImplTest {
         final PaymentEntity entityToUpdate = new PaymentEntity();
         when(paymentRepository.findById(guid)).thenReturn(Optional.of(entityToUpdate));
 
-        // When
+        // when
         paymentService.updateNote(guid, toPartUpdateRequest);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findById(guid);
         inOrder.verify(paymentMapper).toDto(entityToUpdate);
@@ -276,11 +288,11 @@ class PaymentServiceImplTest {
 
     @Test
     void whenThereIsNoPaymentWithIdDeleteThrowException() {
-        // Given
+        // given
         final UUID guid = UUID.randomUUID();
         when(paymentRepository.findById(guid)).thenReturn(Optional.empty());
 
-        // When & Then
+        // when & Then
         final EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
                 () -> paymentService.deleteById(guid)
@@ -293,17 +305,17 @@ class PaymentServiceImplTest {
 
     @Test
     void deleteTest() {
-        // Given
+        // given
         final UUID guid = UUID.randomUUID();
 
         final PaymentEntity entityToDelete = new PaymentEntity();
         when(paymentRepository.findById(guid)).thenReturn(Optional.of(entityToDelete));
         doNothing().when(paymentRepository).delete(entityToDelete);
 
-        // When
+        // when
         paymentService.deleteById(guid);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findById(guid);
         inOrder.verify(paymentRepository).delete(entityToDelete);

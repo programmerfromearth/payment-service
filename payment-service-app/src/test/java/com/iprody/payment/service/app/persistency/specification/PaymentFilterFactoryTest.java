@@ -31,7 +31,7 @@ class PaymentFilterFactoryTest {
 
     @Test
     void fromFilterWhenAllFieldsFilled() {
-        // Given
+        // given
         final PaymentStatus expectedStatus = PaymentStatus.RECEIVED;
         final String expectedCurrency = "USD";
         final BigDecimal expectedMinAmount = BigDecimal.ZERO;
@@ -79,10 +79,10 @@ class PaymentFilterFactoryTest {
         when(criteriaBuilderMock.and(combined1, amountPredicate)).thenReturn(combined2);
         when(criteriaBuilderMock.and(combined2, createdAtPredicate)).thenReturn(combined3);
 
-        // When
+        // when
         PaymentFilterFactory.fromFilter(filter).toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(rootMock, criteriaQueryMock, criteriaBuilderMock);
         inOrder.verify(rootMock).get(PaymentEntity_.STATUS);
         inOrder.verify(criteriaBuilderMock).equal(paymentStatusPath, expectedStatus);
@@ -103,7 +103,7 @@ class PaymentFilterFactoryTest {
 
     @Test
     void fromFilterWhenAllFieldsFilled1() {
-        // Given
+        // given
         final PaymentStatus expectedStatus = PaymentStatus.RECEIVED;
         final String expectedCurrency = "USD";
         final BigDecimal expectedMinAmount = BigDecimal.ZERO;
@@ -151,10 +151,10 @@ class PaymentFilterFactoryTest {
         when(criteriaBuilderMock.and(combined1, amountPredicate)).thenReturn(combined2);
         when(criteriaBuilderMock.and(combined2, createdAtPredicate)).thenReturn(combined3);
 
-        // When
+        // when
         PaymentFilterFactory.fromFilter(filter).toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(rootMock, criteriaQueryMock, criteriaBuilderMock);
         inOrder.verify(rootMock).get(PaymentEntity_.STATUS);
         inOrder.verify(criteriaBuilderMock).equal(paymentStatusPath, expectedStatus);
@@ -175,7 +175,7 @@ class PaymentFilterFactoryTest {
 
     @Test
     void fromFilterWhenAllFieldsFilled2() {
-        // Given
+        // given
         final PaymentStatus expectedStatus = PaymentStatus.RECEIVED;
         final String expectedCurrency = "USD";
         final BigDecimal expectedMinAmount = null;
@@ -223,10 +223,10 @@ class PaymentFilterFactoryTest {
         when(criteriaBuilderMock.and(combined1, amountPredicate)).thenReturn(combined2);
         when(criteriaBuilderMock.and(combined2, createdAtPredicate)).thenReturn(combined3);
 
-        // When
+        // when
         PaymentFilterFactory.fromFilter(filter).toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(rootMock, criteriaQueryMock, criteriaBuilderMock);
         inOrder.verify(rootMock).get(PaymentEntity_.STATUS);
         inOrder.verify(criteriaBuilderMock).equal(paymentStatusPath, expectedStatus);
