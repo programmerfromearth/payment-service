@@ -1,5 +1,6 @@
 package com.iprody.payment.service.app.service.payment.api;
 
+import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
 import com.iprody.payment.service.app.service.payment.model.PaymentDto;
 import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import org.springframework.data.domain.Page;
@@ -15,5 +16,15 @@ public interface PaymentService {
 
     Optional<PaymentDto> findPaymentById(UUID id);
 
+    PaymentDto getById(UUID id); //not used for now but It was needed to add by homework
+
     Page<PaymentDto> searchPagedByFilter(PaymentFilter paymentFilter, Pageable pageable);
+
+    PaymentDto create(PaymentDto paymentToCreateDto);
+
+    PaymentDto update(UUID id, PaymentDto paymentToUpdate);
+
+    PaymentDto updateNote(UUID id, PaymentToPartUpdateRequest toPartUpdateRequest);
+
+    void deleteById(UUID id);
 }

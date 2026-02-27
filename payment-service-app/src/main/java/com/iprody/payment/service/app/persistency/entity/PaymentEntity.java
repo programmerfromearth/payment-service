@@ -1,7 +1,16 @@
 package com.iprody.payment.service.app.persistency.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -15,6 +24,7 @@ import java.util.UUID;
 @Setter
 public class PaymentEntity {
     @Id
+    @UuidGenerator
     @Column(nullable = false, unique = true)
     private UUID guid;
 

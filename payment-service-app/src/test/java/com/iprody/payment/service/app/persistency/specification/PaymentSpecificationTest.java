@@ -3,7 +3,11 @@ package com.iprody.payment.service.app.persistency.specification;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity_;
 import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -15,8 +19,11 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.RECEIVED;
+import static com.iprody.payment.service.app.util.TestConstants.OFFSET_DATE_TIME;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 @ExtendWith(MockitoExtension.class)
@@ -144,8 +151,8 @@ class PaymentSpecificationTest {
     @Test
     void createdBetween() {
         // given
-        final OffsetDateTime after = OffsetDateTime.now();
-        final OffsetDateTime before = OffsetDateTime.now();
+        final OffsetDateTime after = OFFSET_DATE_TIME;
+        final OffsetDateTime before = OFFSET_DATE_TIME;
         final Path<OffsetDateTime> path = mock(Path.class);
         final Predicate expectedPredicate = mock(Predicate.class);
 
@@ -167,7 +174,7 @@ class PaymentSpecificationTest {
     @Test
     void createdGreater() {
         // given
-        final OffsetDateTime after = OffsetDateTime.now();
+        final OffsetDateTime after = OFFSET_DATE_TIME;
         final Path<OffsetDateTime> path = mock(Path.class);
         final Predicate expectedPredicate = mock(Predicate.class);
 
@@ -189,7 +196,7 @@ class PaymentSpecificationTest {
     @Test
     void createdLess() {
         // given
-        final OffsetDateTime before = OffsetDateTime.now();
+        final OffsetDateTime before = OFFSET_DATE_TIME;
         final Path<OffsetDateTime> path = mock(Path.class);
         final Predicate expectedPredicate = mock(Predicate.class);
 

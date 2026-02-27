@@ -4,7 +4,11 @@ import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity_;
 import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
 import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -15,7 +19,10 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-import static org.mockito.Mockito.*;
+import static com.iprody.payment.service.app.util.TestConstants.OFFSET_DATE_TIME;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,13 +38,13 @@ class PaymentFilterFactoryTest {
 
     @Test
     void fromFilterWhenAllFieldsFilled() {
-        // Given
+        // given
         final PaymentStatus expectedStatus = PaymentStatus.RECEIVED;
         final String expectedCurrency = "USD";
         final BigDecimal expectedMinAmount = BigDecimal.ZERO;
         final BigDecimal expectedMaxAmount = BigDecimal.TWO;
-        final OffsetDateTime expectedCreatedAfter = OffsetDateTime.now();
-        final OffsetDateTime expectedCreatedBefore = OffsetDateTime.now();
+        final OffsetDateTime expectedCreatedAfter = OFFSET_DATE_TIME;
+        final OffsetDateTime expectedCreatedBefore = OFFSET_DATE_TIME;
 
         final PaymentFilter filter = PaymentFilter.builder()
                 .status(expectedStatus)
@@ -79,10 +86,10 @@ class PaymentFilterFactoryTest {
         when(criteriaBuilderMock.and(combined1, amountPredicate)).thenReturn(combined2);
         when(criteriaBuilderMock.and(combined2, createdAtPredicate)).thenReturn(combined3);
 
-        // When
+        // when
         PaymentFilterFactory.fromFilter(filter).toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(rootMock, criteriaQueryMock, criteriaBuilderMock);
         inOrder.verify(rootMock).get(PaymentEntity_.STATUS);
         inOrder.verify(criteriaBuilderMock).equal(paymentStatusPath, expectedStatus);
@@ -103,12 +110,12 @@ class PaymentFilterFactoryTest {
 
     @Test
     void fromFilterWhenAllFieldsFilled1() {
-        // Given
+        // given
         final PaymentStatus expectedStatus = PaymentStatus.RECEIVED;
         final String expectedCurrency = "USD";
         final BigDecimal expectedMinAmount = BigDecimal.ZERO;
         final BigDecimal expectedMaxAmount = null;
-        final OffsetDateTime expectedCreatedAfter = OffsetDateTime.now();
+        final OffsetDateTime expectedCreatedAfter = OFFSET_DATE_TIME;
         final OffsetDateTime expectedCreatedBefore = null;
 
         final PaymentFilter filter = PaymentFilter.builder()
@@ -151,10 +158,10 @@ class PaymentFilterFactoryTest {
         when(criteriaBuilderMock.and(combined1, amountPredicate)).thenReturn(combined2);
         when(criteriaBuilderMock.and(combined2, createdAtPredicate)).thenReturn(combined3);
 
-        // When
+        // when
         PaymentFilterFactory.fromFilter(filter).toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(rootMock, criteriaQueryMock, criteriaBuilderMock);
         inOrder.verify(rootMock).get(PaymentEntity_.STATUS);
         inOrder.verify(criteriaBuilderMock).equal(paymentStatusPath, expectedStatus);
@@ -175,13 +182,13 @@ class PaymentFilterFactoryTest {
 
     @Test
     void fromFilterWhenAllFieldsFilled2() {
-        // Given
+        // given
         final PaymentStatus expectedStatus = PaymentStatus.RECEIVED;
         final String expectedCurrency = "USD";
         final BigDecimal expectedMinAmount = null;
         final BigDecimal expectedMaxAmount = BigDecimal.TWO;
         final OffsetDateTime expectedCreatedAfter = null;
-        final OffsetDateTime expectedCreatedBefore = OffsetDateTime.now();
+        final OffsetDateTime expectedCreatedBefore = OFFSET_DATE_TIME;
 
         final PaymentFilter filter = PaymentFilter.builder()
                 .status(expectedStatus)
@@ -223,10 +230,10 @@ class PaymentFilterFactoryTest {
         when(criteriaBuilderMock.and(combined1, amountPredicate)).thenReturn(combined2);
         when(criteriaBuilderMock.and(combined2, createdAtPredicate)).thenReturn(combined3);
 
-        // When
+        // when
         PaymentFilterFactory.fromFilter(filter).toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
 
-        // Then
+        // then
         final InOrder inOrder = inOrder(rootMock, criteriaQueryMock, criteriaBuilderMock);
         inOrder.verify(rootMock).get(PaymentEntity_.STATUS);
         inOrder.verify(criteriaBuilderMock).equal(paymentStatusPath, expectedStatus);
