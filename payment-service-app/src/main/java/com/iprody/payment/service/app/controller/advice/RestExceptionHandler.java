@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.time.Instant;
 
 @ControllerAdvice
-@AllArgsConstructor
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(PaymentEntityNotFoundException.class)
