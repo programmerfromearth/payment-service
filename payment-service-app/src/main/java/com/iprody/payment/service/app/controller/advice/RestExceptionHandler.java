@@ -1,41 +1,39 @@
 package com.iprody.payment.service.app.controller.advice;
 
+import com.iprody.payment.service.app.common.api.TimeProvider;
 import com.iprody.payment.service.app.controller.advice.model.ErrorResponse;
 import com.iprody.payment.service.app.controller.advice.model.PaymentErrorResponse;
 import com.iprody.payment.service.app.exception.PaymentEntityNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.time.Instant;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+@RequiredArgsConstructor
+public class RestExceptionHandler {
+    private final TimeProvider timeProvider;
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(PaymentEntityNotFoundException.class)
-    protected ResponseEntity<PaymentErrorResponse> handlePaymentEntityNotFoundException(
+    protected PaymentErrorResponse handlePaymentEntityNotFoundException(
             PaymentEntityNotFoundException ex) {
 
-        final PaymentErrorResponse response = PaymentErrorResponse.builder()
+        return PaymentErrorResponse.builder()
                 .message(ex.getMessage())
-                .timestamp(Instant.now())
+                .timestamp(timeProvider.now().toInstant())
                 .operation(ex.getOperation())
                 .entityId(ex.getEntityId())
                 .build();
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    @ResponseBody
-    protected ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        final ErrorResponse response = ErrorResponse.builder()
+    protected ErrorResponse handleException(Exception ex) {
+        return ErrorResponse.builder()
                 .message(ex.getMessage())
-                .timestamp(Instant.now())
+                .timestamp(timeProvider.now().toInstant())
                 .build();
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
