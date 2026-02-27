@@ -22,7 +22,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.iprody.payment.service.app.util.CommonConstants.*;
+import static com.iprody.payment.service.app.util.CommonConstants.DELETE;
+import static com.iprody.payment.service.app.util.CommonConstants.GET;
+import static com.iprody.payment.service.app.util.CommonConstants.PART_UPDATE;
+import static com.iprody.payment.service.app.util.CommonConstants.UPDATE;
 
 @Service
 @RequiredArgsConstructor
