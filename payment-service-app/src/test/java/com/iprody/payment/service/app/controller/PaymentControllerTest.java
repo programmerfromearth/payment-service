@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,7 +33,6 @@ import java.util.UUID;
 import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.RECEIVED;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -261,9 +261,9 @@ class PaymentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCreate.write(toCreateRequest).getJson()))
                 .andExpect(status().isCreated())
-                .andExpect(header().exists("Location"))
-                .andExpect(header().string("Location", containsString("/payments/" + guid)))
-                .andExpect(content().string(json.write(apiResponse).getJson()));
+                .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andExpect(header().string(HttpHeaders.LOCATION, containsString("/payments/" + guid)))
+                .andExpect(content().json(json.write(apiResponse).getJson()));
 
         // then
         final InOrder inOrder = inOrder(paymentMapper, paymentService);
@@ -292,7 +292,7 @@ class PaymentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCreate.write(toUpdateRequest).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(json.write(apiResponse).getJson()));
+                .andExpect(content().json(json.write(apiResponse).getJson()));
 
         // then
         final InOrder inOrder = inOrder(paymentMapper, paymentService);
@@ -319,7 +319,7 @@ class PaymentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPartUpdate.write(toPartUpdateRequest).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(json.write(apiResponse).getJson()));
+                .andExpect(content().json(json.write(apiResponse).getJson()));
 
         // then
         final InOrder inOrder = inOrder(paymentMapper, paymentService);
@@ -332,8 +332,6 @@ class PaymentControllerTest {
     void deletePaymentTest() throws Exception {
         // given
         final UUID guid = UUID.randomUUID();
-
-        doNothing().when(paymentService).deleteById(guid);
 
         // when
         this.mockMvc.perform(delete("/payments/{id}", guid))
