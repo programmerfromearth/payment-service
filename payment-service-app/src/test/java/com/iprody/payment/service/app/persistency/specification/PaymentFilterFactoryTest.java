@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+import static com.iprody.payment.service.app.util.TestConstants.OFFSET_DATE_TIME;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,8 +43,8 @@ class PaymentFilterFactoryTest {
         final String expectedCurrency = "USD";
         final BigDecimal expectedMinAmount = BigDecimal.ZERO;
         final BigDecimal expectedMaxAmount = BigDecimal.TWO;
-        final OffsetDateTime expectedCreatedAfter = OffsetDateTime.now();
-        final OffsetDateTime expectedCreatedBefore = OffsetDateTime.now();
+        final OffsetDateTime expectedCreatedAfter = OFFSET_DATE_TIME;
+        final OffsetDateTime expectedCreatedBefore = OFFSET_DATE_TIME;
 
         final PaymentFilter filter = PaymentFilter.builder()
                 .status(expectedStatus)
@@ -114,7 +115,7 @@ class PaymentFilterFactoryTest {
         final String expectedCurrency = "USD";
         final BigDecimal expectedMinAmount = BigDecimal.ZERO;
         final BigDecimal expectedMaxAmount = null;
-        final OffsetDateTime expectedCreatedAfter = OffsetDateTime.now();
+        final OffsetDateTime expectedCreatedAfter = OFFSET_DATE_TIME;
         final OffsetDateTime expectedCreatedBefore = null;
 
         final PaymentFilter filter = PaymentFilter.builder()
@@ -187,7 +188,7 @@ class PaymentFilterFactoryTest {
         final BigDecimal expectedMinAmount = null;
         final BigDecimal expectedMaxAmount = BigDecimal.TWO;
         final OffsetDateTime expectedCreatedAfter = null;
-        final OffsetDateTime expectedCreatedBefore = OffsetDateTime.now();
+        final OffsetDateTime expectedCreatedBefore = OFFSET_DATE_TIME;
 
         final PaymentFilter filter = PaymentFilter.builder()
                 .status(expectedStatus)

@@ -1,5 +1,6 @@
 package com.iprody.payment.service.app.service.payment.impl;
 
+import com.iprody.payment.service.app.common.api.TimeProvider;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
 import com.iprody.payment.service.app.exception.EntityNotFoundException;
 import com.iprody.payment.service.app.mapper.PaymentMapper;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.iprody.payment.service.app.util.CommonConstants.NOT_FOUND_ENTITY_EXCEPTION_MESSAGE_TEMPLATE;
+import static com.iprody.payment.service.app.util.TestConstants.OFFSET_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,6 +47,9 @@ class PaymentServiceImplTest {
 
     @Captor
     ArgumentCaptor<PaymentEntity> paymentEntityCaptor;
+
+    @Mock
+    private TimeProvider timeProvider;
 
     @Mock
     private PaymentRepository paymentRepository;
@@ -179,6 +184,7 @@ class PaymentServiceImplTest {
         final PaymentEntity entityToSave = new PaymentEntity();
         final PaymentEntity savedEntity = new PaymentEntity();
 
+        when(timeProvider.now()).thenReturn(OFFSET_DATE_TIME);
         when(paymentMapper.toEntity(paymentToCreate)).thenReturn(entityToSave);
         when(paymentRepository.save(entityToSave)).thenReturn(savedEntity);
 
@@ -186,7 +192,8 @@ class PaymentServiceImplTest {
         paymentService.create(paymentToCreate);
 
         // then
-        final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
+        final InOrder inOrder = inOrder(timeProvider, paymentMapper, paymentRepository);
+        inOrder.verify(timeProvider).now();
         inOrder.verify(paymentMapper).toEntity(paymentToCreate);
         inOrder.verify(paymentRepository).save(paymentEntityCaptor.capture());
         inOrder.verify(paymentMapper).toDto(savedEntity);
@@ -231,14 +238,16 @@ class PaymentServiceImplTest {
                 .build();
 
         final PaymentEntity entityToUpdate = new PaymentEntity();
+        when(timeProvider.now()).thenReturn(OFFSET_DATE_TIME);
         when(paymentRepository.findById(guid)).thenReturn(Optional.of(entityToUpdate));
 
         // when
         paymentService.update(guid, paymentToUpdate);
 
         // then
-        final InOrder inOrder = inOrder(paymentMapper, paymentRepository);
+        final InOrder inOrder = inOrder(timeProvider, paymentMapper, paymentRepository);
         inOrder.verify(paymentRepository).findById(guid);
+        inOrder.verify(timeProvider).now();
         inOrder.verify(paymentMapper).toDto(entityToUpdate);
 
         assertThat(entityToUpdate.getGuid()).isNull();

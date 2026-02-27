@@ -1,5 +1,6 @@
 package com.iprody.payment.service.app.service.payment.impl;
 
+import com.iprody.payment.service.app.common.api.TimeProvider;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
 import com.iprody.payment.service.app.exception.EntityNotFoundException;
 import com.iprody.payment.service.app.mapper.PaymentMapper;
@@ -27,6 +28,7 @@ import static com.iprody.payment.service.app.util.CommonConstants.NOT_FOUND_ENTI
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
+    private final TimeProvider timeProvider;
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
 
@@ -61,7 +63,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @Override
     public PaymentDto create(PaymentDto paymentToCreate) {
-        final OffsetDateTime now = OffsetDateTime.now();
+        final OffsetDateTime now = timeProvider.now();
 
         final PaymentEntity toCreate = paymentMapper.toEntity(paymentToCreate);
         toCreate.setCreatedAt(now);
@@ -103,8 +105,8 @@ public class PaymentServiceImpl implements PaymentService {
                 });
     }
 
-    private static void updateEntity(PaymentDto paymentToUpdate, PaymentEntity entity) {
-        final OffsetDateTime now = OffsetDateTime.now();
+    private void updateEntity(PaymentDto paymentToUpdate, PaymentEntity entity) {
+        final OffsetDateTime now = timeProvider.now();
 
         entity.setInquiryRefId(paymentToUpdate.inquiryRefId());
         entity.setAmount(paymentToUpdate.amount());
