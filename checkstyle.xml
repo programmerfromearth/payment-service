@@ -9,11 +9,14 @@
         <property name="max" value="120"/>
     </module>
 
+    <module name="NewlineAtEndOfFile"/>
+
     <module name="TreeWalker">
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
         <module name="FinalLocalVariable"/>
         <module name="UnusedImports"/>
+        <module name="AvoidStarImport"/>
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
             <property name="braceAdjustment" value="0"/>

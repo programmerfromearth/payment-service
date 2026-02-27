@@ -16,10 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.RECEIVED;
+import static com.iprody.payment.service.app.util.TestConstants.OFFSET_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
 
@@ -53,8 +53,8 @@ class PaymentMapperTest {
         entity.setTransactionRefId(UUID.randomUUID());
         entity.setStatus(RECEIVED);
         entity.setNote("note");
-        entity.setCreatedAt(OffsetDateTime.now());
-        entity.setUpdatedAt(OffsetDateTime.now());
+        entity.setCreatedAt(OFFSET_DATE_TIME);
+        entity.setUpdatedAt(OFFSET_DATE_TIME);
 
         // when
         final PaymentDto dto = mapper.toDto(entity);
@@ -95,8 +95,8 @@ class PaymentMapperTest {
                 .transactionRefId(UUID.randomUUID())
                 .status(RECEIVED)
                 .note("note")
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
+                .createdAt(OFFSET_DATE_TIME)
+                .updatedAt(OFFSET_DATE_TIME)
                 .build();
 
         // when
@@ -138,8 +138,8 @@ class PaymentMapperTest {
                 .transactionRefId(UUID.randomUUID())
                 .status(RECEIVED)
                 .note("note")
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
+                .createdAt(OFFSET_DATE_TIME)
+                .updatedAt(OFFSET_DATE_TIME)
                 .build();
 
         // when
@@ -235,8 +235,8 @@ class PaymentMapperTest {
                 .currency("USD")
                 .minAmount(BigDecimal.ZERO)
                 .maxAmount(BigDecimal.ONE)
-                .createdAfter(OffsetDateTime.now())
-                .createdBefore(OffsetDateTime.now())
+                .createdAfter(OFFSET_DATE_TIME)
+                .createdBefore(OFFSET_DATE_TIME)
                 .build();
     }
 }
