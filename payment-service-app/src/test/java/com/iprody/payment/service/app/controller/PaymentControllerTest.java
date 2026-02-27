@@ -1,10 +1,12 @@
 package com.iprody.payment.service.app.controller;
 
+import com.iprody.payment.service.app.config.TimeProviderConfig;
 import com.iprody.payment.service.app.controller.payment.PaymentController;
 import com.iprody.payment.service.app.controller.payment.model.PaymentFilterRequest;
 import com.iprody.payment.service.app.controller.payment.model.PaymentResponse;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToCreateRequest;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
+import com.iprody.payment.service.app.exception.PaymentEntityNotFoundException;
 import com.iprody.payment.service.app.mapper.PaymentMapper;
 import com.iprody.payment.service.app.service.payment.api.PaymentService;
 import com.iprody.payment.service.app.service.payment.model.PaymentDto;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,10 +30,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.RECEIVED;
+import static com.iprody.payment.service.app.util.CommonConstants.GET;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
@@ -50,6 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(PaymentController.class)
 @AutoConfigureJsonTesters
 @MockitoSettings(strictness = STRICT_STUBS)
+@Import(TimeProviderConfig.class)
 class PaymentControllerTest {
 
     @Autowired
@@ -83,7 +87,7 @@ class PaymentControllerTest {
                 .guid(id)
                 .build();
 
-        when(paymentService.findPaymentById(id)).thenReturn(Optional.of(paymentDto));
+        when(paymentService.getById(id)).thenReturn(paymentDto);
         when(paymentMapper.toApiResponse(paymentDto)).thenReturn(paymentResponse);
 
         // when
@@ -93,7 +97,7 @@ class PaymentControllerTest {
 
         // then
         final InOrder inOrder = inOrder(paymentMapper, paymentService);
-        inOrder.verify(paymentService).findPaymentById(id);
+        inOrder.verify(paymentService).getById(id);
         inOrder.verify(paymentMapper).toApiResponse(paymentDto);
         inOrder.verifyNoMoreInteractions();
     }
@@ -103,7 +107,7 @@ class PaymentControllerTest {
         // given
         final UUID id = UUID.randomUUID();
 
-        when(paymentService.findPaymentById(id)).thenReturn(Optional.empty());
+        when(paymentService.getById(id)).thenThrow(new PaymentEntityNotFoundException(id, GET));
 
         // when
         this.mockMvc.perform(get("/payments/{id}", id))
@@ -112,7 +116,7 @@ class PaymentControllerTest {
 
         // then
         final InOrder inOrder = inOrder(paymentMapper, paymentService);
-        inOrder.verify(paymentService).findPaymentById(id);
+        inOrder.verify(paymentService).getById(id);
         inOrder.verify(paymentMapper, never()).toApiResponse(any());
         inOrder.verifyNoMoreInteractions();
     }

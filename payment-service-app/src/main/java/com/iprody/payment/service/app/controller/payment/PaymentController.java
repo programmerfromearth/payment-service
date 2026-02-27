@@ -29,7 +29,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -54,12 +53,11 @@ public class PaymentController {
                 .map(paymentMapper::toApiResponse);
     }
 
-    @GetMapping("/{id}")//TODO remove redundant ResponseEntity after adding exception handlers
-    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable("id") UUID id) {
-        final Optional<PaymentResponse> result = paymentService.findPaymentById(id)
-                .map(paymentMapper::toApiResponse);
+    @GetMapping("/{id}")
+    public PaymentResponse getPaymentById(@PathVariable("id") UUID id) {
+        final PaymentDto result = paymentService.getById(id);
 
-        return ResponseEntity.of(result);
+        return paymentMapper.toApiResponse(result);
     }
 
     @PostMapping

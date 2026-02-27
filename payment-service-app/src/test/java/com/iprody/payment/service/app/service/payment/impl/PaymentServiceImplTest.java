@@ -2,7 +2,7 @@ package com.iprody.payment.service.app.service.payment.impl;
 
 import com.iprody.payment.service.app.common.api.TimeProvider;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
-import com.iprody.payment.service.app.exception.EntityNotFoundException;
+import com.iprody.payment.service.app.exception.PaymentEntityNotFoundException;
 import com.iprody.payment.service.app.mapper.PaymentMapper;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
@@ -145,8 +145,8 @@ class PaymentServiceImplTest {
         when(paymentRepository.findById(guid)).thenReturn(Optional.empty());
 
         // when & Then
-        final IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        final PaymentEntityNotFoundException exception = assertThrows(
+                PaymentEntityNotFoundException.class,
                 () -> paymentService.getById(guid)
         );
         assertEquals(NOT_FOUND_ENTITY_EXCEPTION_MESSAGE_TEMPLATE.formatted(guid), exception.getMessage());
@@ -212,8 +212,8 @@ class PaymentServiceImplTest {
         when(paymentRepository.findById(guid)).thenReturn(Optional.empty());
 
         // when & Then
-        final EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
+        final PaymentEntityNotFoundException exception = assertThrows(
+                PaymentEntityNotFoundException.class,
                 () -> paymentService.update(guid, paymentToUpdate)
         );
         assertEquals(String.format(NOT_FOUND_ENTITY_EXCEPTION_MESSAGE_TEMPLATE, guid), exception.getMessage());
@@ -271,8 +271,8 @@ class PaymentServiceImplTest {
         when(paymentRepository.findById(guid)).thenReturn(Optional.empty());
 
         // when & Then
-        final EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
+        final PaymentEntityNotFoundException exception = assertThrows(
+                PaymentEntityNotFoundException.class,
                 () -> paymentService.updateNote(guid, toPartUpdateRequest)
         );
         assertEquals(String.format(NOT_FOUND_ENTITY_EXCEPTION_MESSAGE_TEMPLATE, guid), exception.getMessage());
@@ -311,8 +311,8 @@ class PaymentServiceImplTest {
         when(paymentRepository.findById(guid)).thenReturn(Optional.empty());
 
         // when & Then
-        final EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
+        final PaymentEntityNotFoundException exception = assertThrows(
+                PaymentEntityNotFoundException.class,
                 () -> paymentService.deleteById(guid)
         );
         assertEquals(String.format(NOT_FOUND_ENTITY_EXCEPTION_MESSAGE_TEMPLATE, guid), exception.getMessage());
