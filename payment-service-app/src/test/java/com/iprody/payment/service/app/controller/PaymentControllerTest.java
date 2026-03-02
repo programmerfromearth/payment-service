@@ -1,6 +1,8 @@
 package com.iprody.payment.service.app.controller;
 
+import com.iprody.payment.service.app.common.api.TimeProvider;
 import com.iprody.payment.service.app.config.TimeProviderConfig;
+import com.iprody.payment.service.app.controller.advice.model.PaymentErrorResponse;
 import com.iprody.payment.service.app.controller.payment.PaymentController;
 import com.iprody.payment.service.app.controller.payment.model.PaymentFilterRequest;
 import com.iprody.payment.service.app.controller.payment.model.PaymentResponse;
@@ -34,6 +36,8 @@ import java.util.UUID;
 
 import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.RECEIVED;
 import static com.iprody.payment.service.app.util.CommonConstants.GET;
+import static com.iprody.payment.service.app.util.CommonConstants.NOT_FOUND_ENTITY_EXCEPTION_MESSAGE_TEMPLATE;
+import static com.iprody.payment.service.app.util.TestConstants.OFFSET_DATE_TIME;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
@@ -61,6 +65,8 @@ class PaymentControllerTest {
     @Autowired
     private JacksonTester<PaymentResponse> json;
     @Autowired
+    private JacksonTester<PaymentErrorResponse> jsonPaymentErrorResponse;
+    @Autowired
     private JacksonTester<List<PaymentResponse>> jsonList;
     @Autowired
     private JacksonTester<Page<PaymentResponse>> jsonPage;
@@ -69,6 +75,8 @@ class PaymentControllerTest {
     @Autowired
     private JacksonTester<PaymentToPartUpdateRequest> jsonPartUpdate;
 
+    @MockitoBean
+    private TimeProvider timeProvider;
     @MockitoBean
     private PaymentService paymentService;
     @MockitoBean
@@ -108,11 +116,17 @@ class PaymentControllerTest {
         final UUID id = UUID.randomUUID();
 
         when(paymentService.getById(id)).thenThrow(new PaymentEntityNotFoundException(id, GET));
+        when(timeProvider.now()).thenReturn(OFFSET_DATE_TIME);
 
         // when
         this.mockMvc.perform(get("/payments/{id}", id))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(""));
+                .andExpect(content().json(jsonPaymentErrorResponse.write(PaymentErrorResponse.builder()
+                        .message(String.format(NOT_FOUND_ENTITY_EXCEPTION_MESSAGE_TEMPLATE, id))
+                        .timestamp(OFFSET_DATE_TIME.toInstant())
+                        .operation(GET)
+                        .entityId(id)
+                        .build()).getJson()));
 
         // then
         final InOrder inOrder = inOrder(paymentMapper, paymentService);
