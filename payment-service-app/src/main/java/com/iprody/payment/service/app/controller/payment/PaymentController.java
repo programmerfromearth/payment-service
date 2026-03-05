@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,6 +40,7 @@ public class PaymentController {
     private final PaymentMapper paymentMapper;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('admin', 'reader')")
     public List<PaymentResponse> getAllPayments() {
         return paymentService.getAllPayments().stream()
                 .map(paymentMapper::toApiResponse)
@@ -46,6 +48,7 @@ public class PaymentController {
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('admin', 'reader')")
     public Page<PaymentResponse> searchPagedByFilter(@ModelAttribute PaymentFilterRequest paymentFilterRequest,
                                                      @PageableDefault(page = 0, size = 25) Pageable pageable) {
         final PaymentFilter paymentFilter = paymentMapper.toPaymentFilter(paymentFilterRequest);
@@ -54,6 +57,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('admin', 'reader')")
     public PaymentResponse getPaymentById(@PathVariable("id") UUID id) {
         final PaymentDto result = paymentService.getById(id);
 
@@ -61,6 +65,7 @@ public class PaymentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<PaymentResponse> create(@RequestBody PaymentToCreateRequest toCreateRequest) {
         final PaymentDto toCreateDto = paymentMapper.toDto(toCreateRequest);
 
@@ -80,6 +85,7 @@ public class PaymentController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('admin')")
     public PaymentResponse update(@PathVariable("id") UUID id,
                                   @RequestBody PaymentToCreateRequest toCreateRequest) {
         final PaymentDto toCreateDto = paymentMapper.toDto(toCreateRequest);
@@ -89,6 +95,7 @@ public class PaymentController {
     }
 
     @PatchMapping("/{id}/note")
+    @PreAuthorize("hasRole('admin')")
     public PaymentResponse updatePart(@PathVariable("id") UUID id,
                                       @RequestBody PaymentToPartUpdateRequest toPartUpdateRequest) {
         final PaymentDto result = paymentService.updateNote(id, toPartUpdateRequest);
@@ -98,6 +105,7 @@ public class PaymentController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('admin')")
     public void deleteById(@PathVariable("id") UUID id) {
         paymentService.deleteById(id);
     }

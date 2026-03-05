@@ -57,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(PaymentController.class)
 @AutoConfigureJsonTesters
 @MockitoSettings(strictness = STRICT_STUBS)
-@Import(TimeProviderConfig.class)
+@Import({TimeProviderConfig.class, TestSecurityConfig.class})
 class PaymentControllerTest {
 
     @Autowired
