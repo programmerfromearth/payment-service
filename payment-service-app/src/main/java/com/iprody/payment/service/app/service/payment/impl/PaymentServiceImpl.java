@@ -1,9 +1,12 @@
 package com.iprody.payment.service.app.service.payment.impl;
 
+import com.iprody.payment.service.app.async.AsyncSender;
+import com.iprody.payment.service.app.async.XPaymentAdapterRequestMessage;
 import com.iprody.payment.service.app.common.api.TimeProvider;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
 import com.iprody.payment.service.app.exception.PaymentEntityNotFoundException;
 import com.iprody.payment.service.app.mapper.PaymentMapper;
+import com.iprody.payment.service.app.mapper.XPaymentAdapterMapper;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.repository.PaymentRepository;
 import com.iprody.payment.service.app.persistency.specification.PaymentFilterFactory;
@@ -11,7 +14,7 @@ import com.iprody.payment.service.app.service.payment.api.PaymentService;
 import com.iprody.payment.service.app.service.payment.model.PaymentDto;
 import com.iprody.payment.service.app.service.payment.model.PaymentFilter;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,18 +25,32 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.iprody.payment.service.app.persistency.entity.PaymentStatus.PENDING;
 import static com.iprody.payment.service.app.util.CommonConstants.DELETE;
 import static com.iprody.payment.service.app.util.CommonConstants.GET;
 import static com.iprody.payment.service.app.util.CommonConstants.PART_UPDATE;
 import static com.iprody.payment.service.app.util.CommonConstants.UPDATE;
 
 @Service
-@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
     private final TimeProvider timeProvider;
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
+    private final XPaymentAdapterMapper xPaymentAdapterMapper;
+    private final AsyncSender<XPaymentAdapterRequestMessage> sender;
+
+    public PaymentServiceImpl(TimeProvider timeProvider,
+                              PaymentRepository paymentRepository,
+                              PaymentMapper paymentMapper,
+                              XPaymentAdapterMapper xPaymentAdapterMapper,
+                              @Lazy AsyncSender<XPaymentAdapterRequestMessage> sender) {
+        this.timeProvider = timeProvider;
+        this.paymentRepository = paymentRepository;
+        this.paymentMapper = paymentMapper;
+        this.xPaymentAdapterMapper = xPaymentAdapterMapper;
+        this.sender = sender;
+    }
 
     @Override
     public List<PaymentDto> getAllPayments() {
@@ -70,8 +87,13 @@ public class PaymentServiceImpl implements PaymentService {
         final PaymentEntity toCreate = paymentMapper.toEntity(paymentToCreate);
         toCreate.setCreatedAt(now);
         toCreate.setUpdatedAt(now);
+        toCreate.setStatus(PENDING);
 
         final PaymentEntity created = paymentRepository.save(toCreate);
+
+        final XPaymentAdapterRequestMessage requestMessage =
+                xPaymentAdapterMapper.toXPaymentAdapterRequestMessage(created);
+        sender.send(requestMessage);
 
         return paymentMapper.toDto(created);
     }
