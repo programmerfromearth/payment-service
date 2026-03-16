@@ -2,6 +2,8 @@ package com.iprody.payment.service.app.controller;
 
 import com.iprody.payment.service.app.AbstractPostgresIntegrationTest;
 import com.iprody.payment.service.app.TestJwtFactory;
+import com.iprody.payment.service.app.async.AsyncSender;
+import com.iprody.payment.service.app.async.XPaymentAdapterRequestMessage;
 import com.iprody.payment.service.app.controller.payment.model.PaymentResponse;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToCreateRequest;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
@@ -11,6 +13,7 @@ import com.iprody.payment.service.app.persistency.repository.PaymentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
@@ -31,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
+@Import(TestKafkaConfig.class)
 class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
 
     @Autowired
@@ -41,6 +45,9 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
 
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private AsyncSender<XPaymentAdapterRequestMessage> asyncSender;
 
     @Test
     void shouldReturnOnlyLiquibasePaymentsWhenRetrievingAllPayments() throws Exception {
