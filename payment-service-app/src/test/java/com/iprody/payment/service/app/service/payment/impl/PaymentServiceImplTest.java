@@ -1,9 +1,12 @@
 package com.iprody.payment.service.app.service.payment.impl;
 
+import com.iprody.payment.service.app.async.AsyncSender;
+import com.iprody.payment.service.app.async.XPaymentAdapterRequestMessage;
 import com.iprody.payment.service.app.common.api.TimeProvider;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
 import com.iprody.payment.service.app.exception.PaymentEntityNotFoundException;
 import com.iprody.payment.service.app.mapper.PaymentMapper;
+import com.iprody.payment.service.app.mapper.XPaymentAdapterMapper;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
 import com.iprody.payment.service.app.persistency.repository.PaymentRepository;
@@ -56,6 +59,12 @@ class PaymentServiceImplTest {
 
     @Mock
     private PaymentMapper paymentMapper;
+
+    @Mock
+    private XPaymentAdapterMapper xPaymentAdapterMapper;
+
+    @Mock
+    private AsyncSender<XPaymentAdapterRequestMessage> sender;
 
     @InjectMocks
     private PaymentServiceImpl paymentService;
@@ -182,20 +191,24 @@ class PaymentServiceImplTest {
         // given
         final PaymentDto paymentToCreate = PaymentDto.builder().build();
         final PaymentEntity entityToSave = new PaymentEntity();
+        final XPaymentAdapterRequestMessage message = new XPaymentAdapterRequestMessage();
         final PaymentEntity savedEntity = new PaymentEntity();
 
         when(timeProvider.now()).thenReturn(OFFSET_DATE_TIME);
         when(paymentMapper.toEntity(paymentToCreate)).thenReturn(entityToSave);
         when(paymentRepository.save(entityToSave)).thenReturn(savedEntity);
+        when(xPaymentAdapterMapper.toXPaymentAdapterRequestMessage(savedEntity)).thenReturn(message);
 
         // when
         paymentService.create(paymentToCreate);
 
         // then
-        final InOrder inOrder = inOrder(timeProvider, paymentMapper, paymentRepository);
+        final InOrder inOrder = inOrder(timeProvider, paymentMapper, xPaymentAdapterMapper, sender, paymentRepository);
         inOrder.verify(timeProvider).now();
         inOrder.verify(paymentMapper).toEntity(paymentToCreate);
         inOrder.verify(paymentRepository).save(paymentEntityCaptor.capture());
+        inOrder.verify(xPaymentAdapterMapper).toXPaymentAdapterRequestMessage(savedEntity);
+        inOrder.verify(sender).send(message);
         inOrder.verify(paymentMapper).toDto(savedEntity);
         inOrder.verifyNoMoreInteractions();
 
