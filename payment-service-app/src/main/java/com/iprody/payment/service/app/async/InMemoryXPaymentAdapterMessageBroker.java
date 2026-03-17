@@ -40,13 +40,13 @@ class InMemoryXPaymentAdapterMessageBroker implements AsyncSender<XPaymentAdapte
         result.setAmount(amount);
         result.setCurrency(request.getCurrency());
         result.setTransactionRefId(txId);
-        result.setStatus(status != null ? status : defineStaus(amount));
+        result.setStatus(status != null ? status : defineStatus(amount));
         result.setOccurredAt(timeProvider.now());
 
         resultListener.onMessage(result);
     }
 
-    private XPaymentAdapterStatus defineStaus(BigDecimal amount) {
+    private XPaymentAdapterStatus defineStatus(BigDecimal amount) {
         final BigDecimal remainder = amount.remainder(BigDecimal.TWO);
 
         if (remainder.compareTo(BigDecimal.ZERO) == 0) {
