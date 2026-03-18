@@ -1,6 +1,11 @@
 package com.iprody.xpayment.adapter.app.async;
 
-import com.iprody.xpayment.adapter.app.common.api.TimeProvider;
+import com.iprody.common.payment.app.async.AsyncSender;
+import com.iprody.common.payment.app.async.MessageHandler;
+import com.iprody.common.payment.app.async.XPaymentAdapterRequestMessage;
+import com.iprody.common.payment.app.async.XPaymentAdapterResponseMessage;
+import com.iprody.common.payment.app.async.XPaymentAdapterStatus;
+import com.iprody.common.payment.app.time.api.TimeProvider;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +54,6 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
         if (remainder.compareTo(BigDecimal.ZERO) == 0) {
             return XPaymentAdapterStatus.SUCCEEDED;
         }
-
         return XPaymentAdapterStatus.CANCELED;
     }
 }

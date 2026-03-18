@@ -1,7 +1,7 @@
 package com.iprody.payment.service.app.async.kafka;
 
-import com.iprody.payment.service.app.async.AsyncSender;
-import com.iprody.payment.service.app.async.XPaymentAdapterRequestMessage;
+import com.iprody.common.payment.app.async.AsyncSender;
+import com.iprody.common.payment.app.async.XPaymentAdapterRequestMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

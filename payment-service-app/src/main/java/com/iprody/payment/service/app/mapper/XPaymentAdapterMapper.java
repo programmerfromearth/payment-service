@@ -1,6 +1,6 @@
 package com.iprody.payment.service.app.mapper;
 
-import com.iprody.payment.service.app.async.XPaymentAdapterRequestMessage;
+import com.iprody.common.payment.app.async.XPaymentAdapterRequestMessage;
 import com.iprody.payment.service.app.persistency.entity.PaymentEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
