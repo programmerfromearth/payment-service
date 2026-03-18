@@ -27,15 +27,43 @@ spring:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
+  kafka:
+    bootstrap-servers: localhost:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+    consumer:
+      group-id: xpayment-adapter-result-consumers
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.iprody.payment.service.app.async.XPaymentAdapterResponseMessage
+    listener:
+      ack-mode: manual
+      concurrency: 1
+
 logging:
   level:
     com.iprody.payment: DEBUG
     org.springframework.web: INFO
     org.springframework.data: INFO
     org.springframework.security: INFO
+    org.apache.kafka.clients: WARN
+    org.springframework.kafka: INFO
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info,liquibase,beans,metrics,env,loggers
+
+app:
+  kafka:
+    topics:
+      xpayment-adapter:
+        request: xpayment-adapter.requests
+        response: xpayment-adapter.responses
