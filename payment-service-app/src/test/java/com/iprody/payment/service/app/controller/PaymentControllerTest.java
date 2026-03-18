@@ -1,6 +1,6 @@
 package com.iprody.payment.service.app.controller;
 
-import com.iprody.payment.service.app.common.api.TimeProvider;
+import com.iprody.common.payment.app.time.api.TimeProvider;
 import com.iprody.payment.service.app.config.TimeProviderConfig;
 import com.iprody.payment.service.app.controller.advice.model.PaymentErrorResponse;
 import com.iprody.payment.service.app.controller.payment.PaymentController;

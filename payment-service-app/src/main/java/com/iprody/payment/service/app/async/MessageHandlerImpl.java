@@ -1,5 +1,8 @@
 package com.iprody.payment.service.app.async;
 
+import com.iprody.common.payment.app.async.MessageHandler;
+import com.iprody.common.payment.app.async.XPaymentAdapterResponseMessage;
+import com.iprody.common.payment.app.async.XPaymentAdapterStatus;
 import com.iprody.payment.service.app.persistency.entity.PaymentStatus;
 import com.iprody.payment.service.app.service.payment.api.PaymentService;
 import com.iprody.payment.service.app.service.payment.model.PaymentDto;

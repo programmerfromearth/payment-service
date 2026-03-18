@@ -9,7 +9,9 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
+        <module>common-payment-app</module>
         <module>payment-service-app</module>
+        <module>x-payment-adapter-app</module>
     </modules>
 
     <properties>

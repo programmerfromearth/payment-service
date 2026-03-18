@@ -1,4 +1,4 @@
-package com.iprody.payment.service.app.config;
+package com.iprody.xpayment.adapter.app.config;
 
 import com.iprody.common.payment.app.time.api.TimeProvider;
 import com.iprody.common.payment.app.time.impl.SystemTimeProviderImpl;
