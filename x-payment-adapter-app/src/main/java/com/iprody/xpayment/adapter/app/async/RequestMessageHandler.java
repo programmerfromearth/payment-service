@@ -6,6 +6,9 @@ import com.iprody.common.payment.app.async.XPaymentAdapterRequestMessage;
 import com.iprody.common.payment.app.async.XPaymentAdapterResponseMessage;
 import com.iprody.common.payment.app.async.XPaymentAdapterStatus;
 import com.iprody.common.payment.app.time.api.TimeProvider;
+import com.iprody.xpayment.adapter.app.exception.NonRetrayableException;
+import com.iprody.xpayment.adapter.app.exception.PaymentValidationException;
+import com.iprody.xpayment.adapter.app.service.validator.api.PaymentValidationStrategyContextService;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +26,12 @@ import java.util.concurrent.TimeUnit;
 public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequestMessage> {
     private final TimeProvider timeProvider;
     private final AsyncSender<XPaymentAdapterResponseMessage> sender;
+    private final PaymentValidationStrategyContextService paymentValidationStrategyContextService;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     @Override
     public void handle(XPaymentAdapterRequestMessage message) {
+        validate(message);
         scheduler.schedule(() -> {
             final XPaymentAdapterResponseMessage responseMessage = new XPaymentAdapterResponseMessage();
 
@@ -46,6 +51,15 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
     @PreDestroy
     public void shutdown() {
         scheduler.shutdown();
+    }
+
+    private void validate(XPaymentAdapterRequestMessage message) {
+        try {
+            paymentValidationStrategyContextService.runValidation(message);
+        } catch (PaymentValidationException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new NonRetrayableException("Payment validation failed: %s".formatted(ex.getMessage()), ex);
+        }
     }
 
     private XPaymentAdapterStatus defineStaus(BigDecimal amount) {
