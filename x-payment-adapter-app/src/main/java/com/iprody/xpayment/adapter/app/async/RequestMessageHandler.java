@@ -1,0 +1,55 @@
+package com.iprody.xpayment.adapter.app.async;
+
+import com.iprody.xpayment.adapter.app.common.api.TimeProvider;
+import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequestMessage> {
+    private final TimeProvider timeProvider;
+    private final AsyncSender<XPaymentAdapterResponseMessage> sender;
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+    @Override
+    public void handle(XPaymentAdapterRequestMessage message) {
+        scheduler.schedule(() -> {
+            final XPaymentAdapterResponseMessage responseMessage = new XPaymentAdapterResponseMessage();
+
+            final BigDecimal amount = message.getAmount();
+
+            responseMessage.setPaymentGuid(message.getPaymentGuid());
+            responseMessage.setAmount(amount);
+            responseMessage.setCurrency(message.getCurrency());
+            responseMessage.setStatus(defineStaus(amount));
+            responseMessage.setTransactionRefId(UUID.randomUUID());
+            responseMessage.setOccurredAt(timeProvider.now());
+
+            sender.send(responseMessage);
+        }, 10, TimeUnit.SECONDS);
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        scheduler.shutdown();
+    }
+
+    private XPaymentAdapterStatus defineStaus(BigDecimal amount) {
+        final BigDecimal remainder = amount.remainder(BigDecimal.TWO);
+
+        if (remainder.compareTo(BigDecimal.ZERO) == 0) {
+            return XPaymentAdapterStatus.SUCCEEDED;
+        }
+
+        return XPaymentAdapterStatus.CANCELED;
+    }
+}

@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>payment-service-app</module>
+        <module>x-payment-adapter-app</module>
     </modules>
 
     <properties>
