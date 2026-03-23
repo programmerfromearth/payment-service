@@ -8,7 +8,8 @@
       "publicClient": false,
       "secret": "myclient-secret",
       "redirectUris": [
-        "http://localhost:8085/*"
+        "http://localhost:8085/*",
+        "http://keycloak:8085/*"
       ],
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true

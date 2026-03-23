@@ -41,7 +41,7 @@ spring:
       properties:
         spring.json.use.type.headers: false
         spring.json.trusted.packages: "*"
-        spring.json.value.default.type: com.iprody.payment.service.app.async.XPaymentAdapterResponseMessage
+        spring.json.value.default.type: com.iprody.common.payment.app.async.XPaymentAdapterResponseMessage
     listener:
       ack-mode: manual
       concurrency: 1

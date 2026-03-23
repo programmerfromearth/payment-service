@@ -2,22 +2,54 @@ services:
   payment-service-app:
     image: payment-service-app
     environment:
+      SPRING_SERVER_PORT: 8080
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8085/realms/iprody-lms
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment-db
     ports:
       - "8080:8080"
+
+  x-payment-adapter-app:
+    image: x-payment-adapter-app
+    environment:
+      SPRING_SERVER_PORT: 8080
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      APP_X_PAYMENT_PROVIDER_API_CLIENT_URL: http://x-payment-provider-api:8080
+      APP_X_PAYMENT_PROVIDER_API_CLIENT_USERNAME: paymentAgentIprody
+      APP_X_PAYMENT_PROVIDER_API_CLIENT_PASSWORD: iprodyTestPassword0123
+      APP_X_PAYMENT_PROVIDER_API_CLIENT_ACCOUNT: paymentAgentIprodyApiToken
+      APP_X_PAYMENT_PROVIDER_API_CLIENT_X_PAY_ACCOUNT_HEADER: X-Pay-Account
+    ports:
+      - "8081:8080"
+
+  x-payment-provider-api:
+    image: x-payment-provider-api
+    environment:
+      SPRING_SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb
+      SPRING_DATASOURCE_DRIVERCLASSNAME: org.h2.Driver
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: INFO
+      LOGGING_LEVEL_COM_IPRODY: DEBUG
+      XPAYMENT_PROCESSING_DELAY_MS: 60000
+    ports:
+      - "9999:8080"
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.3
     container_name: keycloak
     command:
       - start-dev
-      - --http-port=8080
+      - --http-port=8085
       - --import-realm
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
-      - "8085:8080"
+      - "8085:8085"
     volumes:
       - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
 
@@ -38,7 +70,6 @@ services:
   kafka:
     image: apache/kafka:4.1.1
     container_name: kafka
-    hostname: kafka
     ports:
       - "9092:9092"
       - "9093:9093"

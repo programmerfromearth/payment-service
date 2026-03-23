@@ -1,6 +1,7 @@
-package com.iprody.payment.service.app.common.impl;
+package com.iprody.common.payment.app.time.impl;
 
-import com.iprody.payment.service.app.common.api.TimeProvider;
+
+import com.iprody.common.payment.app.time.api.TimeProvider;
 
 import java.time.OffsetDateTime;
 
