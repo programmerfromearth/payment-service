@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.1</version>
+        <version>4.0.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.iprody</groupId>
@@ -23,6 +23,11 @@
         <test.containers.version>1.21.4</test.containers.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.iprody.common</groupId>
+            <artifactId>common-payment-app</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>

@@ -1,8 +1,8 @@
 package com.iprody.payment.service.app.service.payment.impl;
 
-import com.iprody.payment.service.app.async.AsyncSender;
-import com.iprody.payment.service.app.async.XPaymentAdapterRequestMessage;
-import com.iprody.payment.service.app.common.api.TimeProvider;
+import com.iprody.common.payment.app.async.AsyncSender;
+import com.iprody.common.payment.app.async.XPaymentAdapterRequestMessage;
+import com.iprody.common.payment.app.time.api.TimeProvider;
 import com.iprody.payment.service.app.controller.payment.model.PaymentToPartUpdateRequest;
 import com.iprody.payment.service.app.exception.PaymentEntityNotFoundException;
 import com.iprody.payment.service.app.mapper.PaymentMapper;

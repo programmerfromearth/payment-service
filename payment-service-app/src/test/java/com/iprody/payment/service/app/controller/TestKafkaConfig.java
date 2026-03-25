@@ -1,7 +1,7 @@
 package com.iprody.payment.service.app.controller;
 
-import com.iprody.payment.service.app.async.AsyncSender;
-import com.iprody.payment.service.app.async.XPaymentAdapterRequestMessage;
+import com.iprody.common.payment.app.async.AsyncSender;
+import com.iprody.common.payment.app.async.XPaymentAdapterRequestMessage;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
