@@ -40,7 +40,7 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
             responseMessage.setPaymentGuid(message.getPaymentGuid());
             responseMessage.setAmount(amount);
             responseMessage.setCurrency(message.getCurrency());
-            responseMessage.setStatus(defineStaus(amount));
+            responseMessage.setStatus(defineStatus(amount));
             responseMessage.setTransactionRefId(UUID.randomUUID());
             responseMessage.setOccurredAt(timeProvider.now());
 
@@ -62,7 +62,7 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
         }
     }
 
-    private XPaymentAdapterStatus defineStaus(BigDecimal amount) {
+    private XPaymentAdapterStatus defineStatus(BigDecimal amount) {
         final BigDecimal remainder = amount.remainder(BigDecimal.TWO);
 
         if (remainder.compareTo(BigDecimal.ZERO) == 0) {
