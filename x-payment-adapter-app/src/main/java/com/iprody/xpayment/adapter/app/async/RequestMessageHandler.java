@@ -6,51 +6,65 @@ import com.iprody.common.payment.app.async.XPaymentAdapterRequestMessage;
 import com.iprody.common.payment.app.async.XPaymentAdapterResponseMessage;
 import com.iprody.common.payment.app.async.XPaymentAdapterStatus;
 import com.iprody.common.payment.app.time.api.TimeProvider;
+import com.iprody.xpayment.adapter.app.api.XPaymentProviderGateway;
 import com.iprody.xpayment.adapter.app.exception.NonRetrayableException;
 import com.iprody.xpayment.adapter.app.exception.PaymentValidationException;
 import com.iprody.xpayment.adapter.app.service.validator.api.PaymentValidationStrategyContextService;
-import jakarta.annotation.PreDestroy;
+import com.iprody.xpayment.api.model.ChargeResponse;
+import com.iprody.xpayment.api.model.CreateChargeRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import org.springframework.web.client.RestClientException;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequestMessage> {
     private final TimeProvider timeProvider;
-    private final AsyncSender<XPaymentAdapterResponseMessage> sender;
     private final PaymentValidationStrategyContextService paymentValidationStrategyContextService;
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final AsyncSender<XPaymentAdapterResponseMessage> sender;
+    private final XPaymentProviderGateway xPaymentProviderGateway;
 
     @Override
     public void handle(XPaymentAdapterRequestMessage message) {
+        log.info("Payment request received paymentGuid - {}, amount - {}, currency - {}",
+                message.getPaymentGuid(), message.getAmount(), message.getCurrency());
         validate(message);
-        scheduler.schedule(() -> {
-            final XPaymentAdapterResponseMessage responseMessage = new XPaymentAdapterResponseMessage();
 
-            final BigDecimal amount = message.getAmount();
+        CreateChargeRequest createChargeRequest = new CreateChargeRequest();
+        createChargeRequest.setAmount(message.getAmount());
+        createChargeRequest.setCurrency(message.getCurrency());
+        createChargeRequest.setOrder(message.getPaymentGuid());
 
-            responseMessage.setPaymentGuid(message.getPaymentGuid());
-            responseMessage.setAmount(amount);
-            responseMessage.setCurrency(message.getCurrency());
-            responseMessage.setStatus(defineStaus(amount));
-            responseMessage.setTransactionRefId(UUID.randomUUID());
+        try {
+            ChargeResponse chargeResponse = xPaymentProviderGateway.createCharge(createChargeRequest);
+
+            log.info("Payment request with paymentGuid - {} is sent for payment processing. Current status - ",
+                    chargeResponse.getStatus());
+
+            XPaymentAdapterResponseMessage responseMessage = new XPaymentAdapterResponseMessage();
+
+            responseMessage.setPaymentGuid(chargeResponse.getOrder());
+            responseMessage.setTransactionRefId(chargeResponse.getId());
+            responseMessage.setAmount(chargeResponse.getAmount());
+            responseMessage.setCurrency(chargeResponse.getCurrency());
+            responseMessage.setStatus(XPaymentAdapterStatus.valueOf(chargeResponse.getStatus()));
             responseMessage.setOccurredAt(timeProvider.now());
 
             sender.send(responseMessage);
-        }, 10, TimeUnit.SECONDS);
-    }
+        } catch (RestClientException ex) {
+            log.error("Error in time of sending payment request with paymentGuid - {}",
+                    message.getPaymentGuid(), ex);
 
-    @PreDestroy
-    public void shutdown() {
-        scheduler.shutdown();
+            XPaymentAdapterResponseMessage responseMessage = new XPaymentAdapterResponseMessage();
+            responseMessage.setPaymentGuid(message.getPaymentGuid());
+            responseMessage.setAmount(message.getAmount());
+            responseMessage.setCurrency(message.getCurrency());
+            responseMessage.setStatus(XPaymentAdapterStatus.CANCELED);
+            responseMessage.setOccurredAt(timeProvider.now());
+            sender.send(responseMessage);
+        }
     }
 
     private void validate(XPaymentAdapterRequestMessage message) {
@@ -60,14 +74,5 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
             log.error(ex.getMessage(), ex);
             throw new NonRetrayableException("Payment validation failed: %s".formatted(ex.getMessage()), ex);
         }
-    }
-
-    private XPaymentAdapterStatus defineStaus(BigDecimal amount) {
-        final BigDecimal remainder = amount.remainder(BigDecimal.TWO);
-
-        if (remainder.compareTo(BigDecimal.ZERO) == 0) {
-            return XPaymentAdapterStatus.SUCCEEDED;
-        }
-        return XPaymentAdapterStatus.CANCELED;
     }
 }
