@@ -1,6 +1,6 @@
 package com.iprody.xpayment.adapter.app.config;
 
-import com.iprody.xpayment.adapter.app.exception.NonRetrayableException;
+import com.iprody.xpayment.adapter.app.exception.NonRetryableException;
 import org.springframework.boot.kafka.autoconfigure.ConcurrentKafkaListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ public class KafkaConfig {
         final DefaultErrorHandler errorHandler = new DefaultErrorHandler(
                 new DeadLetterPublishingRecoverer(kafkaTemplate),
                 new FixedBackOff(3000, 3));
-        errorHandler.addNotRetryableExceptions(NonRetrayableException.class);
+        errorHandler.addNotRetryableExceptions(NonRetryableException.class);
 
         return errorHandler;
     }
