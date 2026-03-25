@@ -6,7 +6,7 @@ import com.iprody.common.payment.app.async.XPaymentAdapterRequestMessage;
 import com.iprody.common.payment.app.async.XPaymentAdapterResponseMessage;
 import com.iprody.common.payment.app.async.XPaymentAdapterStatus;
 import com.iprody.common.payment.app.time.api.TimeProvider;
-import com.iprody.xpayment.adapter.app.exception.NonRetrayableException;
+import com.iprody.xpayment.adapter.app.exception.NonRetryableException;
 import com.iprody.xpayment.adapter.app.exception.PaymentValidationException;
 import com.iprody.xpayment.adapter.app.service.validator.api.PaymentValidationStrategyContextService;
 import jakarta.annotation.PreDestroy;
@@ -40,7 +40,7 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
             responseMessage.setPaymentGuid(message.getPaymentGuid());
             responseMessage.setAmount(amount);
             responseMessage.setCurrency(message.getCurrency());
-            responseMessage.setStatus(defineStaus(amount));
+            responseMessage.setStatus(defineStatus(amount));
             responseMessage.setTransactionRefId(UUID.randomUUID());
             responseMessage.setOccurredAt(timeProvider.now());
 
@@ -58,11 +58,11 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
             paymentValidationStrategyContextService.runValidation(message);
         } catch (PaymentValidationException ex) {
             log.error(ex.getMessage(), ex);
-            throw new NonRetrayableException("Payment validation failed: %s".formatted(ex.getMessage()), ex);
+            throw new NonRetryableException("Payment validation failed: %s".formatted(ex.getMessage()), ex);
         }
     }
 
-    private XPaymentAdapterStatus defineStaus(BigDecimal amount) {
+    private XPaymentAdapterStatus defineStatus(BigDecimal amount) {
         final BigDecimal remainder = amount.remainder(BigDecimal.TWO);
 
         if (remainder.compareTo(BigDecimal.ZERO) == 0) {
