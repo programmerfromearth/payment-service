@@ -1,4 +1,4 @@
-package com.iprody.xpayment.adapter.app.api;
+package com.iprody.xpayment.adapter.app.config;
 
 import com.iprody.xpayment.api.ApiClient;
 import com.iprody.xpayment.api.client.DefaultApi;
