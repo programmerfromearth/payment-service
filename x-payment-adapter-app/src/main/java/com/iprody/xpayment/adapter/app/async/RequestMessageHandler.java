@@ -7,7 +7,7 @@ import com.iprody.common.payment.app.async.XPaymentAdapterResponseMessage;
 import com.iprody.common.payment.app.async.XPaymentAdapterStatus;
 import com.iprody.xpayment.adapter.app.async.model.ChargeResponseDto;
 import com.iprody.xpayment.adapter.app.async.model.CreateChargeRequestDto;
-import com.iprody.xpayment.adapter.app.exception.NonRetrayableException;
+import com.iprody.xpayment.adapter.app.exception.NonRetryableException;
 import com.iprody.xpayment.adapter.app.exception.PaymentValidationException;
 import com.iprody.xpayment.adapter.app.mapper.XPaymentProviderMapper;
 import com.iprody.xpayment.adapter.app.service.validator.api.PaymentValidationStrategyContextService;
@@ -61,7 +61,7 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
             paymentValidationStrategyContextService.runValidation(message);
         } catch (PaymentValidationException ex) {
             log.error(ex.getMessage(), ex);
-            throw new NonRetrayableException("Payment validation failed: %s".formatted(ex.getMessage()), ex);
+            throw new NonRetryableException("Payment validation failed: %s".formatted(ex.getMessage()), ex);
         }
     }
 }
