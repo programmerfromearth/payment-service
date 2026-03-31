@@ -7,6 +7,7 @@ import com.iprody.common.payment.app.async.XPaymentAdapterResponseMessage;
 import com.iprody.common.payment.app.async.XPaymentAdapterStatus;
 import com.iprody.xpayment.adapter.app.async.model.ChargeResponseDto;
 import com.iprody.xpayment.adapter.app.async.model.CreateChargeRequestDto;
+import com.iprody.xpayment.adapter.app.checkstate.api.PaymentStateCheckRegistrar;
 import com.iprody.xpayment.adapter.app.exception.NonRetryableException;
 import com.iprody.xpayment.adapter.app.exception.PaymentValidationException;
 import com.iprody.xpayment.adapter.app.mapper.XPaymentProviderMapper;
@@ -25,6 +26,7 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
     private final AsyncSender<XPaymentAdapterResponseMessage> sender;
     private final XPaymentProviderGateway xPaymentProviderGateway;
     private final XPaymentProviderMapper xPaymentProviderMapper;
+    private final PaymentStateCheckRegistrar paymentStateCheckRegistrar;
 
     @Override
     public void handle(XPaymentAdapterRequestMessage message) {
@@ -44,6 +46,9 @@ public class RequestMessageHandler implements MessageHandler<XPaymentAdapterRequ
                     xPaymentProviderMapper.toXPaymentAdapterResponseMessage(chargeResponse);
 
             sender.send(responseMessage);
+            paymentStateCheckRegistrar.register(
+                    chargeResponse.id(), chargeResponse.order(), chargeResponse.amount(), chargeResponse.currency());
+
         } catch (RestClientException ex) {
             log.error("Error in time of sending payment request with paymentGuid - {}",
                     message.getPaymentGuid(), ex);

@@ -38,3 +38,9 @@ app:
       password: iprodyTestPassword0123
       account: paymentAgentIprodyApiToken
       x-pay-account-header: X-Pay-Account
+
+  rabbitmq:
+    exchange-name: payment-state-check-exchange
+    queue-name: payment-state-check-queue
+    max-retries: 60
+    interval-ms: 60000
