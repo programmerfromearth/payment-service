@@ -28,7 +28,7 @@ public class KafkaXPaymentAdapterResponseSender implements AsyncSender<XPaymentA
             } else {
                 final RecordMetadata recordMetadata = result.getRecordMetadata();
                 log.info("Message sent to topic {} partition {} offset {}",
-                        recordMetadata.partition(), recordMetadata.offset(), recordMetadata.timestamp());
+                        recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset());
             }
         });
     }
