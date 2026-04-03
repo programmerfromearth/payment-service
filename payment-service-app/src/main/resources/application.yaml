@@ -46,6 +46,12 @@ spring:
       ack-mode: manual
       concurrency: 1
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+
 logging:
   level:
     com.iprody.payment: DEBUG
@@ -67,3 +73,9 @@ app:
       xpayment-adapter:
         request: xpayment-adapter.requests
         response: xpayment-adapter.responses
+
+  rabbitmq:
+    exchange-name: payment-state-check-exchange
+    queue-name: payment-state-check-queue
+    max-retries: 60
+    interval-ms: 60000
