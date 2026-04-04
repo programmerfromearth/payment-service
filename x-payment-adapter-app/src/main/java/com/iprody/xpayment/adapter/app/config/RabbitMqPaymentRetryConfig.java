@@ -13,10 +13,15 @@ import java.util.Map;
 
 @Configuration
 public class RabbitMqPaymentRetryConfig {
-    @Value("${app.rabbitmq.queue-name}")
-    private String queueName;
-    @Value("${app.rabbitmq.exchange-name}")
-    private String delayedExchangeName;
+    private final String queueName;
+    private final String delayedExchangeName;
+
+    public RabbitMqPaymentRetryConfig(
+            @Value("${app.rabbitmq.queue-name}") String queueName,
+            @Value("${app.rabbitmq.delayed-exchange-name}") String delayedExchangeName) {
+        this.queueName = queueName;
+        this.delayedExchangeName = delayedExchangeName;
+    }
 
     @Bean
     public Queue xpaymentQueue() {

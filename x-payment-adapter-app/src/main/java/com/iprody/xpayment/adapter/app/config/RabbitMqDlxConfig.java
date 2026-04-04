@@ -5,25 +5,38 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqDlxConfig {
-    @Bean
-    DirectExchange deadLetterExchange() {
-        return new DirectExchange("payments.dlx");
+    private final String deadLetterExchangeName;
+    private final String deadLetterQueue;
+    private final String deadLetterRoutingKey;
+
+    public RabbitMqDlxConfig(@Value("${app.rabbitmq.dead-letter-exchange}") String deadLetterExchangeName,
+                             @Value("${app.rabbitmq.dead-letter-queue}") String deadLetterQueue,
+                             @Value("${app.rabbitmq.dead-letter-routing-key}") String deadLetterRoutingKey) {
+        this.deadLetterExchangeName = deadLetterExchangeName;
+        this.deadLetterQueue = deadLetterQueue;
+        this.deadLetterRoutingKey = deadLetterRoutingKey;
     }
 
     @Bean
-    Queue deadLetterQueue() {
-        return QueueBuilder.durable("payments.dead.queue").build();
+    public DirectExchange deadLetterExchange() {
+        return new DirectExchange(deadLetterExchangeName);
     }
 
     @Bean
-    Binding dlxBinding() {
+    public Queue deadLetterQueue() {
+        return QueueBuilder.durable(deadLetterQueue).build();
+    }
+
+    @Bean
+    public Binding dlxBinding() {
         return BindingBuilder.bind(deadLetterQueue())
                 .to(deadLetterExchange())
-                .with("payments.dead");
+                .with(deadLetterRoutingKey);
     }
 }
